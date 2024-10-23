@@ -1,0 +1,12 @@
+int a= 015678;
+a +=512453;
+b= 10;
+a++=--b;
+print a;
+++a+++b++;
+123e3e3e3efgfthrh5ttht;
+string s;
+s="  ghk73 2uir  *#(&*(lkjl"
+
+strin b;
+
