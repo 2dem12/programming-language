@@ -13,6 +13,25 @@ bor Bor;
 typedef std::tuple<int, std::string, int> iter;
 std::vector<iter> lexems;
 
+class invalid_argument : public std::exception {
+public:
+    // Конструктор с инициализацией
+    invalid_argument(int num_line, const std::string& line)
+        : num_line_(std::to_string(num_line)), line_(line) {
+        ans_ = "Invalid symbols \"" + line_ + "\" in line: " + num_line_;
+    }
+
+    // Переопределение метода what()
+    const char* what() const noexcept override {
+        return ans_.c_str();
+    }
+
+private:
+    std::string num_line_;
+    std::string line_;
+    std::string ans_;
+};
+
 bool is_int(std::string s) {
     for (char i : s) {
         if (!isdigit(i)) {
@@ -23,12 +42,21 @@ bool is_int(std::string s) {
 }
 
 bool is_operation(std::string s) {
-    for (std::string i : {"+", "-", "*", "/", ">", "<", ">=", "<=", "=", "++", "--", "+=", "-="}) {
+    for (std::string i : {"+", "-", "*", "/", ">", "<", ">=", "<=", "=", "++", "--", "+=", "-=", "&"}) {
         if (i == s) {
             return true;
         }
     }
     return false;
+}
+
+bool is_unary(std::string s) {
+    if (!(s == "+" || s == "-" || s == "&" || s == "*")) return 0;
+    int id = std::get<0>(lexems[lexems.size() - 1]);
+    if (id == 2 || id == 3) {
+        return 0;
+    }
+    return 1;
 }
 
 bool is_punctuation(std::string s) {
@@ -105,15 +133,14 @@ std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
 
 void creat_bor() {
     std::string line;
-    std::ifstream file("wordsList.txt");
+    std::ifstream file("/Users/damir/CLionProjects/programming-language_main/wordsList.txt");
     while (std::getline(file, line)) {
         Bor.add(line);
     }
 }
 
-
 void solve() {
-    std::ifstream file("code.txt", std::ios::binary);
+    std::ifstream file("/Users/damir/CLionProjects/programming-language_main/code.txt", std::ios::binary);
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -124,13 +151,18 @@ void solve() {
     int cnt_line = 1;
     char* line = strtok(buffer, "\n");
     while (line != nullptr) {
+        bool first = 1;
         for (auto i : splitIntoWordsAndPunctuation(line)) {
             if (Bor.exists(i)) {
                 lexems.emplace_back(1, i, cnt_line);
             } else if (is_int(i) || i[0] == '"') {
                 lexems.emplace_back(3, i, cnt_line);
             } else if (is_operation(i)) {
-                lexems.emplace_back(4, i, cnt_line);
+                if (is_unary(i) || first) {
+                    lexems.emplace_back(8, i, cnt_line);
+                } else {
+                    lexems.emplace_back(4, i, cnt_line);
+                }
             } else if (is_punctuation(i)) {
                 lexems.emplace_back(5, i, cnt_line);
             } else if (i == ".") {
@@ -142,6 +174,7 @@ void solve() {
             } else {
                 throw std::make_pair(cnt_line, i);
             }
+            first = 0;
         }
         cnt_line++;
         line = strtok(nullptr, "\n");
@@ -154,7 +187,8 @@ int main() {
     try {
         solve();
     } catch (const std::pair<int, std::string> & e) {
-        std::cout << "Invalid symbols in line " << e.first << " : " << e.second << std::endl;
+        // std::cout << "Invalid symbols in line " << e.first << " : " << e.second << std::endl;
+        throw invalid_argument(e.first, e.second);
     }
     for (auto i : lexems) {
         std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';

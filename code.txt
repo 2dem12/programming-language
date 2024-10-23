@@ -6,7 +6,6 @@ print a;
 ++a+++b++;
 123e3e3e3efgfthrh5ttht;
 string s;
-s="  ghk73 2uir  *#(&*(lkjl"
-
-strin b;
-
+s="ghk732uir*#(&*(lkjl"
+~
+123
