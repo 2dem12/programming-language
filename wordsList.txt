@@ -1,0 +1,10 @@
+int
+string
+for
+while
+if
+elif
+else
+break
+input
+print
