@@ -23,12 +23,21 @@ bool is_int(std::string s) {
 }
 
 bool is_operation(std::string s) {
-    for (std::string i : {"+", "-", "*", "/", ">", "<", ">=", "<=", "=", "++", "--", "+=", "-="}) {
+    for (std::string i : {"+", "-", "*", "/", ">", "<", ">=", "<=", "=", "++", "--", "+=", "-=", "&"}) {
         if (i == s) {
             return true;
         }
     }
     return false;
+}
+
+bool is_unary(std::string s) {
+    if (!(s == "+" || s == "-" || s == "&" || s == "*")) return 0;
+    int id = std::get<0>(lexems[lexems.size() - 1]);
+    if (id == 2 || id == 3) {
+        return 0;
+    }
+    return 1;
 }
 
 bool is_punctuation(std::string s) {
@@ -123,13 +132,18 @@ void solve() {
     int cnt_line = 1;
     char* line = strtok(buffer, "\n");
     while (line != nullptr) {
+        bool first = 1;
         for (auto i : splitIntoWordsAndPunctuation(line)) {
             if (Bor.exists(i)) {
                 lexems.emplace_back(1, i, cnt_line);
             } else if (is_int(i) || i[0] == '"') {
                 lexems.emplace_back(3, i, cnt_line);
             } else if (is_operation(i)) {
-                lexems.emplace_back(4, i, cnt_line);
+                if (is_unary(i) || first) {
+                    lexems.emplace_back(8, i, cnt_line);
+                } else {
+                    lexems.emplace_back(4, i, cnt_line);
+                }
             } else if (is_punctuation(i)) {
                 lexems.emplace_back(5, i, cnt_line);
             } else if (i == ".") {
@@ -141,6 +155,7 @@ void solve() {
             } else {
                 throw std::make_pair(cnt_line, i);
             }
+            first = 0;
         }
         cnt_line++;
         line = strtok(nullptr, "\n");
