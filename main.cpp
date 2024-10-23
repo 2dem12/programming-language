@@ -111,7 +111,6 @@ void creat_bor() {
     }
 }
 
-
 void solve() {
     std::ifstream file("code.txt", std::ios::binary);
     file.seekg(0, std::ios::end);
