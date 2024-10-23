@@ -149,7 +149,6 @@ void solve() {
     delete[] buffer;
 }
 
-
 int main() {
     creat_bor();
     try {
