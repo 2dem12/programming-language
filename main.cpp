@@ -189,6 +189,7 @@ int main() {
     } catch (const std::pair<int, std::string> & e) {
         // std::cout << "Invalid symbols in line " << e.first << " : " << e.second << std::endl;
         throw invalid_argument(e.first, e.second);
+        //qwerty
     }
     for (auto i : lexems) {
         std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';
