@@ -47,3 +47,11 @@ private:
     }
     node *root;
 };
+
+void creat_bor(bor& Bor) {
+    std::string line;
+    std::ifstream file("/Users/damir/CLionProjects/programming-language_main/wordsList.txt");
+    while (std::getline(file, line)) {
+        Bor.add(line);
+    }
+}
