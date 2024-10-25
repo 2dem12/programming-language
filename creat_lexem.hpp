@@ -12,11 +12,12 @@ std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
             currentWord += ch;
             continue;
         }
+        if (currentWord == "/" && ch == '/') return result;
         if ((isalnum(ch) && (currentWord.empty() || !currentWord.empty() && isalnum(currentWord[0]))
             || currentWord.size() == 1 && ispunct(currentWord[0] && ispunct(ch))
-            // || ispunct(ch) && currentWord.size() == 1 && ispunct(currentWord[0]) && try_size(currentWord + ch)
             || currentWord[0] == '"' && ch != '"'
-            || is_operation(currentWord+ch))
+            || is_operation(currentWord+ch)
+            || is_int(currentWord+ch))
             && (!(isdigit(currentWord[0]) && isalnum(ch)) || isdigit(currentWord[0]) && isdigit(ch))) {
             currentWord += ch;
         } else {
@@ -48,7 +49,7 @@ std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
     return result;
 }
 
-void solve(std::vector<std::tuple<int, std::string, int>>& lexems, bor& Bor) {
+void lexical_analysis(std::vector<std::tuple<int, std::string, int>>& lexems, bor& Bor) {
     std::ifstream file("/Users/damir/CLionProjects/programming-language_main/code.txt", std::ios::binary);
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();
@@ -67,7 +68,7 @@ void solve(std::vector<std::tuple<int, std::string, int>>& lexems, bor& Bor) {
             } else if (is_int(i) || i[0] == '"') {
                 lexems.emplace_back(3, i, cnt_line);
             } else if (is_operation(i)) {
-                if (is_unary(i, lexems) || first) {
+                if (is_unary(i, lexems) || (first && ((i == "+" || i == "-" || i == "&" || i == "*")))) {
                     lexems.emplace_back(8, i, cnt_line);
                 } else {
                     lexems.emplace_back(4, i, cnt_line);

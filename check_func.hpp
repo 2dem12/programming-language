@@ -1,6 +1,9 @@
 bool is_int(std::string s) {
+    if (s[0] == '.') return false;
+    int cnt_dot = 0;
     for (char i : s) {
-        if (!isdigit(i)) {
+        if (i == '.') cnt_dot++;
+        if (!isdigit(i) && i != '.' || cnt_dot > 1) {
             return false;
         }
     }
@@ -26,7 +29,7 @@ bool is_unary(std::string s, std::vector<std::tuple<int, std::string, int>>& lex
 }
 
 bool is_punctuation(std::string s) {
-    for (std::string i: {";", "(", ")", "{", "}"}) {
+    for (std::string i: {";", "(", ")", "{", "}", "[", "]"}) {
         if (i == s) {
             return true;
         }

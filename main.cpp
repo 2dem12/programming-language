@@ -19,7 +19,7 @@ std::vector<iter> lexems;
 int main() {
     creat_bor(Bor);
     try {
-        solve(lexems, Bor);
+        lexical_analysis(lexems, Bor);
     } catch (const std::pair<int, std::string> & e) {
         throw invalid_argument(e.first, e.second);
     }

@@ -1,9 +1,20 @@
 int a= 015678;
 a +=512453;
+a=&a;
+array q[];
 b= 10;
 a++=--b;
++= <= == >= -=
 print a;
 ++a+++b++;
 123e3e3e3efgfthrh5ttht;
 string s;
 s="ghk732uir*#(&*(lkjl"
+while (q <= 4//) {
+    print q;
+    q++;
+}
+forif fi for if 45. "6.7.8.5.6"
+float 1.4.3;
+bhkdhnr 56565
+string v = "ffffffffff:  jgjdgdgjdgтситывfor";
