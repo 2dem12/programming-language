@@ -1,5 +1,7 @@
 #include <string>
+#include <utility>
 #include "check_func.hpp"
+
 
 std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
     std::vector<std::string> result;
@@ -49,7 +51,7 @@ std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
     return result;
 }
 
-void lexical_analysis(std::vector<std::tuple<int, std::string, int>>& lexems, bor& Bor) {
+void lexical_analysis(std::vector<inf_lexem>& lexems, bor& Bor) {
     std::ifstream file("/Users/damir/CLionProjects/programming-language_main/code.txt", std::ios::binary);
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();

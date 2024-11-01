@@ -1,3 +1,11 @@
+struct inf_lexem {
+    inf_lexem(int num_, std::string word_, int num_len_) : num(num_), word(std::move(word_)), num_len(num_len_) {}
+    int num;
+    std::string word;
+    int num_len;
+};
+
+
 bool is_int(std::string s) {
     if (s[0] == '.') return false;
     int cnt_dot = 0;
@@ -19,9 +27,9 @@ bool is_operation(std::string s) {
     return false;
 }
 
-bool is_unary(std::string s, std::vector<std::tuple<int, std::string, int>>& lexems) {
+bool is_unary(std::string s, std::vector<inf_lexem>& lexems) {
     if (!(s == "+" || s == "-" || s == "&" || s == "*")) return 0;
-    int id = std::get<0>(lexems[lexems.size() - 1]);
+    int id = (lexems[lexems.size() - 1].num);
     if (id == 2 || id == 3) {
         return 0;
     }

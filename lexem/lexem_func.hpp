@@ -12,10 +12,16 @@
 #include "creat_lexem.hpp"
 
 bor Bor;
-typedef std::tuple<int, std::string, int> iter;
-std::vector<iter> lexems;
 
-std::vector<iter> lexer() {
+// struct inf_lexem {
+//     int num;
+//     std::string word;
+//     int num_len;
+// };
+typedef std::tuple<int, std::string, int> iter;
+std::vector<inf_lexem> lexems;
+
+std::vector<inf_lexem> lexer() {
     creat_bor(Bor);
     try {
         lexical_analysis(lexems, Bor);
@@ -23,7 +29,8 @@ std::vector<iter> lexer() {
         throw invalid_argument(e.first, e.second);
     }
     for (auto i : lexems) {
-        std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';
+        // std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';
+        std::cout << i.num << " " << i.word << " " << i.num_len << '\n';
     }
     return lexems;
 }
