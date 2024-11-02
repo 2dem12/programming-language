@@ -1,5 +1,5 @@
-#include "lexem/lexem_func.hpp"
+#include "recursive descent/recursive_descent.hpp"
 
 int main() {
-    lexer();
+    solve();
 }

@@ -1,6 +1,6 @@
 struct inf_lexem {
-    inf_lexem(int num_, std::string word_, int num_len_) : num(num_), word(std::move(word_)), num_len(num_len_) {}
-    int num;
+    inf_lexem(int num_, std::string word_, int num_len_) : type(num_), word(std::move(word_)), num_len(num_len_) {}
+    int type;
     std::string word;
     int num_len;
 };
@@ -29,7 +29,7 @@ bool is_operation(std::string s) {
 
 bool is_unary(std::string s, std::vector<inf_lexem>& lexems) {
     if (!(s == "+" || s == "-" || s == "&" || s == "*")) return 0;
-    int id = (lexems[lexems.size() - 1].num);
+    int id = (lexems[lexems.size() - 1].type);
     if (id == 2 || id == 3) {
         return 0;
     }

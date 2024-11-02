@@ -30,7 +30,7 @@ std::vector<inf_lexem> lexer() {
     }
     for (auto i : lexems) {
         // std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';
-        std::cout << i.num << " " << i.word << " " << i.num_len << '\n';
+        std::cout << i.type << " " << i.word << " " << i.num_len << '\n';
     }
     return lexems;
 }
