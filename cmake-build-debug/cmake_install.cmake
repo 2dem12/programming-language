@@ -1,4 +1,4 @@
-# Install script for directory: /Users/damir/CLionProjects/programming-language_main
+# Install script for directory: /Users/polina/CLionProjects/ProgrammingLanguage1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/damir/CLionProjects/programming-language_main/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/polina/CLionProjects/ProgrammingLanguage1/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

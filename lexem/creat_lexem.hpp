@@ -52,7 +52,7 @@ std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
 }
 
 void lexical_analysis(std::vector<inf_lexem>& lexems, bor& Bor) {
-    std::ifstream file("/Users/damir/CLionProjects/programming-language_main/code.txt", std::ios::binary);
+    std::ifstream file("code.txt", std::ios::binary);
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);

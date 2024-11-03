@@ -1,4 +1,4 @@
-#include "/Users/damir/CLionProjects/programming-language_main/lexem/lexem_func.hpp"
+#include "../lexem/lexem_func.hpp"
 
 struct Parser {
 public:
@@ -45,11 +45,164 @@ private:
     }
 
     void expression() {
-        // Polina
+        L12();
     }
+    void L12 () {
+        L11();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == ",") {
+                ++iter;
+                L11();
+            } else {
+                break;
+            }
+        }
+    }
+    void L11 () {
+        L10();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "=" || lexems[iter].word == "+=" || lexems[iter].word == "-=") {
+                ++iter;
+                L10();
+            } else {
+                break;
+            }
+        }
+    }
+    void L10 () {
+        L9();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "||") {
+                ++iter;
+                L9();
+            } else {
+                break;
+            }
+        }
+    }
+    void L9 () {
+        L8();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "&&") {
+                ++iter;
+                L8();
+            } else {
+                break;
+            }
+        }
+    }
+    void L8 () {
+        L7();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "|") {
+                ++iter;
+                L7();
+            } else {
+                break;
+            }
+        }
+    }
+    void L7 () {
+        L6();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "&") {
+                ++iter;
+                L6();
+            } else {
+                break;
+            }
+        }
+    }
+    void L6 () {
+        L4();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "<=" || lexems[iter].word == ">=" || lexems[iter].word == "==" || lexems[iter].word == ">" || lexems[iter].word == "<" || lexems[iter].word == "!=") {
+                ++iter;
+                L4();
+            } else {
+                break;
+            }
+        }
+    }
+    void L4() {
+        L3();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "+" || lexems[iter].word == "-") {
+                ++iter;
+                L3();
+            } else {
+                break;
+            }
+        }
+    }
+
+    void L3() {
+        L2();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "*" || lexems[iter].word == "/") {
+                ++iter;
+                L2();
+            } else {
+                break;
+            }
+        }
+    }
+
+    void L2() {
+        if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+            L1();
+        } else if (iter < lexems.size() && lexems[iter].word == "(") {
+            ++iter;
+            expression();
+            if (iter < lexems.size() && lexems[iter].word == ")") {
+                ++iter;
+            } else {
+                error();
+            }
+        } else error();
+    }
+
+    void L1() {
+        if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+            ++iter;
+        } else error();
+    }
+
+    void literal() {
+        if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+            ++iter;
+        } else error();
+    }
+
 
     void defining_variables() {
         // Polina
+        id();
+        if (lexems[iter].word == "=") {
+            ++iter;
+            expression();
+        }  else if (lexems[iter].word == "[") {
+            ++iter;
+            expression();
+            if (lexems[iter].word == "]") {
+                ++iter;
+            } else error();
+            if (lexems[iter].word == "=") {
+                ++iter;
+                if (lexems[iter].word == "{") {
+                    ++iter;
+                    literal();
+                    while (lexems[iter].word == ",") {
+                        ++iter;
+                        literal();
+                    }
+                    if (lexems[iter].word == "}") {
+                        ++iter;
+                    } else error();
+                } else error();
+            }
+        }
+
     }
 
     void func_else() {
@@ -107,9 +260,9 @@ private:
     }
 
     void command_block() {
-        expression();
         if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string") {
-            expression();
+            ++iter;
+            defining_variables();
         } else if (lexems[iter].word == "if") {
             func_if();
         } else if (lexems[iter].word == "for") {
@@ -126,7 +279,7 @@ private:
             if (lexems[iter].word == "}") {
                 return;
             } else {
-                error();
+                expression();
             }
         }
         command_block();
