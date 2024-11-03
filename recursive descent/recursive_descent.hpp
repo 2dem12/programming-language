@@ -58,6 +58,7 @@ private:
             }
         }
     }
+// *
     void L11 () {
         L10();
         while (iter < lexems.size()) {
