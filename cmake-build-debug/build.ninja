@@ -50,6 +50,7 @@ cmake_ninja_workdir = /Users/damir/CLionProjects/programming-language_main/cmake
 build cmake_object_order_depends_target_LangugePrigram: phony || CMakeFiles/LangugePrigram.dir
 
 build CMakeFiles/LangugePrigram.dir/main.cpp.o: CXX_COMPILER__LangugePrigram_unscanned_Debug /Users/damir/CLionProjects/programming-language_main/main.cpp || cmake_object_order_depends_target_LangugePrigram
+  DEFINES = -DCODE=\"/Users/damir/CLionProjects/programming-language_main/code.txt\" -DWORD=\"/Users/damir/CLionProjects/programming-language_main/lexem/wordsList.txt\"
   DEP_FILE = CMakeFiles/LangugePrigram.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.4 -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/LangugePrigram.dir

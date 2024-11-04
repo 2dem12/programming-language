@@ -12,8 +12,9 @@ private:
     int iter = 0;
 
     void error() {
-        throw std::runtime_error("Unexpected token: " + lexems[iter].word);
+        // throw std::runtime_error("Unexpected token: " + lexems[iter].word);
         // throw invalid_argument(lexems[iter].num_len, lexems[iter].word);
+        throw invalid_argument(lexems[iter-1].num_len, lexems[iter-1].word);
     }
 
     void start() {
@@ -276,10 +277,34 @@ private:
 
     void func_for() {
         // Damir
+        iter++;
+        if (lexems[iter++].word != "(") error();
+        expression();
+        if (lexems[iter++].word != ";") error();
+        expression();
+        if (lexems[iter++].word != ";") error();
+        expression();
+        if (lexems[iter++].word != ")") error();
+
+        if (lexems[iter++].word != "{") error();
+
+        body();
+
+        if (lexems[iter++].word != "}") error();
     }
 
     void func_while() {
         // Damir
+        iter++;
+        if (lexems[iter++].word != "(") error();
+        expression();
+        if (lexems[iter++].word != ")") error();
+
+        if (lexems[iter++].word != "{") error();
+
+        body();
+
+        if (lexems[iter++].word != "}") error();
     }
 
     void func_switch() {
@@ -341,12 +366,9 @@ private:
     void function() {
         type();
         id();
-        if (lexems[iter].word == "(") {
-            iter++;
-        } else {
-            error();
-        }
-        if (type(1)) {
+        if (lexems[iter++].word != "(") error();
+
+        if (type(true)) {
             type();
             id();
         }
@@ -355,25 +377,13 @@ private:
             type();
             id();
         }
-        if (lexems[iter].word == ")") {
-            iter++;
-        } else {
-            error();
-        }
+        if (lexems[iter++].word != ")") error();
 
-        if (lexems[iter].word == "{") {
-            iter++;
-        } else {
-            error();
-        }
+        if (lexems[iter++].word != "{") error();
 
         body();
 
-        if (lexems[iter].word == "}") {
-            iter++;
-        } else {
-            error();
-        }
+        if (lexems[iter++].word != "}") error();
     }
 };
 
