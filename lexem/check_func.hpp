@@ -19,7 +19,7 @@ bool is_int(std::string s) {
 }
 
 bool is_operation(std::string s) {
-    for (std::string i : {"+", "-", "*", "/", ">", "<", ">=", "<=", "=", "==", "++", "--", "+=", "-=", "&"}) {
+    for (std::string i : {"+", "-", "*", "/", "%", ">", "<", ">=", "<=", "=", "==", "!=", "++", "--", "+=", "-=", "&"}) {
         if (i == s) {
             return true;
         }

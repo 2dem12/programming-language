@@ -140,7 +140,7 @@ private:
     void L3() {
         L2();
         while (iter < lexems.size()) {
-            if (lexems[iter].word == "*" || lexems[iter].word == "/") {
+            if (lexems[iter].word == "*" || lexems[iter].word == "/" || lexems[iter].word == "%") {
                 ++iter;
                 L2();
             } else {
@@ -160,6 +160,9 @@ private:
             } else {
                 error();
             }
+        } else if (lexems[iter].word == "++") {
+            ++iter;
+            L1();
         } else error();
     }
 
@@ -177,7 +180,6 @@ private:
 
 
     void defining_variables() {
-        // Polina
         id();
         if (lexems[iter].word == "=") {
             ++iter;
@@ -205,6 +207,30 @@ private:
         }
 
     }
+
+    void input () {
+        if (lexems[iter].word == "(") {
+            ++iter;
+            id();
+            if (lexems[iter].word == ")") {
+                ++iter;
+            } else error();
+        } else error();
+    }
+    void print () {
+        if (lexems[iter].word == "(") {
+            ++iter;
+            if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+                ++iter;
+            } else {
+                expression();
+            }
+            if (lexems[iter].word == ")") {
+                ++iter;
+            } else error();
+        } else error();
+    }
+
 
     void func_else() {
         iter++; // "else" dont ++, becos we ++ now
@@ -259,11 +285,16 @@ private:
     void func_switch() {
         // Damir
     }
-
+    void checkPoint () {
+        if (lexems[iter].word == ";") {
+            ++iter;
+        } else error();
+    }
     void command_block() {
         if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string") {
             ++iter;
             defining_variables();
+            checkPoint();
         } else if (lexems[iter].word == "if") {
             func_if();
         } else if (lexems[iter].word == "for") {
@@ -273,14 +304,31 @@ private:
         } else if (lexems[iter].word == "switch") {
             func_switch();
         }
-        else if (lexems[iter].word == "break") {iter++;}
-        else if (lexems[iter].word == "continue") {iter++;}
-        else if (lexems[iter].word == "return") {iter++;}
-        else {
+        else if (lexems[iter].word == "break") {
+            iter++;
+            checkPoint();
+        }
+        else if (lexems[iter].word == "continue") {
+            iter++;
+            checkPoint();
+        }
+        else if (lexems[iter].word == "return") {
+            iter++;
+            checkPoint();
+        } else if (lexems[iter].word == "input") {
+            ++iter;
+            input();
+            checkPoint();
+        } else if (lexems[iter].word == "print") {
+            ++iter;
+            print();
+            checkPoint();
+        } else {
             if (lexems[iter].word == "}") {
                 return;
             } else {
                 expression();
+                checkPoint();
             }
         }
         command_block();
