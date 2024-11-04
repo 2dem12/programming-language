@@ -18,7 +18,6 @@ bor Bor;
 //     std::string word;
 //     int num_len;
 // };
-typedef std::tuple<int, std::string, int> iter;
 std::vector<inf_lexem> lexems;
 
 std::vector<inf_lexem> lexer() {
@@ -29,7 +28,6 @@ std::vector<inf_lexem> lexer() {
         throw invalid_argument(e.first, e.second);
     }
     for (auto i : lexems) {
-        // std::cout << std::get<0>(i) << " " << std::get<1>(i) << " " << std::get<2>(i) << '\n';
         std::cout << i.type << " " << i.word << " " << i.num_len << '\n';
     }
     return lexems;

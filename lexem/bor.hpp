@@ -50,7 +50,7 @@ private:
 
 void creat_bor(bor& Bor) {
     std::string line;
-    std::ifstream file("wordsList.txt");
+    std::ifstream file(WORD);
     while (std::getline(file, line)) {
         Bor.add(line);
     }
