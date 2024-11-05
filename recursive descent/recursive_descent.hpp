@@ -307,9 +307,32 @@ private:
         if (lexems[iter++].word != "}") error();
     }
 
-    void func_switch() {
-        // Damir
+    void func_case() {
+        iter++;
+        expression();
+
+        if (lexems[iter++].word != ":") error();
+        body();
     }
+
+    void func_switch() {
+        iter++;
+
+        if (lexems[iter++].word != "(") error();
+
+        expression();
+
+        if (lexems[iter++].word != ")") error();
+
+        if (lexems[iter++].word != "{") error();
+
+        while (lexems[iter].word == "case") {
+            func_case();
+        }
+
+        if (lexems[iter++].word != "}") error();
+    }
+
     void checkPoint () {
         if (lexems[iter].word == ";") {
             ++iter;
