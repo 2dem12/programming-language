@@ -10,7 +10,9 @@ int main() {
     }
     while (a == b) {
         if ((a - b) == 10) {
-            for (;;) {}
+            for (a = 6; a < 15; a+=2) {
+                break;
+            }
         } elif (a - b <= 10) {
             print(14);
         } elif (a - b > 15) {

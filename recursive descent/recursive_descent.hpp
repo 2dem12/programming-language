@@ -311,8 +311,11 @@ private:
         iter++;
         expression();
 
-        if (lexems[iter++].word != ":") error();
+        if (lexems[iter++].word != "{") error();
+
         body();
+
+        if (lexems[iter++].word != "}") error();
     }
 
     void func_switch() {
