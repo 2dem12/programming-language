@@ -18,7 +18,21 @@ private:
     }
 
     void start() {
-        function();
+        while (iter < lexems.size()) {
+            if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char") {
+                ++iter;
+                id();
+                if (lexems[iter].word == "(") {
+                    iter -= 2;
+                    function();
+                } else {
+                    --iter;
+                    defining_variables();
+                    checkPoint();
+                }
+
+            }
+        }
     }
 
     void type() {
@@ -342,7 +356,7 @@ private:
         } else error();
     }
     void command_block() {
-        if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string") {
+        if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string" || lexems[iter].word == "bool") {
             ++iter;
             defining_variables();
             checkPoint();
