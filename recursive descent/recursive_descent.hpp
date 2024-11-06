@@ -182,7 +182,26 @@ private:
     }
 
     void L1() {
-        if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+        if (lexems[iter].type == 3) {
+            ++iter;
+        } else if (lexems[iter].type == 2) {
+            if (lexems[iter + 1].word == "(") {
+                ++iter;
+                function_call();
+            } else ++iter;
+        } else error();
+    }
+
+    void function_call () {
+        if (lexems[iter].word == "(") {
+            ++iter;
+        } else error();
+        expression();
+        while (lexems[iter].word == ",") {
+            ++iter;
+            expression();
+        }
+        if (lexems[iter].word == ")") {
             ++iter;
         } else error();
     }
@@ -363,10 +382,21 @@ private:
     }
 
     void checkPoint () {
+        std::cout << lexems[iter].word << std::endl;
         if (lexems[iter].word == ";") {
             ++iter;
         } else error();
     }
+
+    void return_block () {
+        if (lexems[iter].word == ";") {
+            ++iter;
+        } else {
+            expression();
+            checkPoint();
+        }
+    }
+
     void command_block() {
         if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string" || lexems[iter].word == "bool") {
             ++iter;
@@ -391,7 +421,7 @@ private:
         }
         else if (lexems[iter].word == "return") {
             iter++;
-            checkPoint();
+            return_block();
         } else if (lexems[iter].word == "input") {
             ++iter;
             input();
