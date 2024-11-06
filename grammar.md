@@ -4,7 +4,7 @@
 
 <body> ::= { <команда блока> ; }
 
-<команда блока> ::=  { <выражение> | ( `int` | `double` | `string` | `bool` ) <определение переменных> | `if` <if> | `for` <for> | `while` <while> | `switch` <switch> |  `break` | continue | `return` <return block> | `print` <print> | `input` <input> }
+<команда блока> ::=  { <выражение> | ( `int` | `double` | `string` | `bool` ) <определение переменных> | `if` <if> | `for` <for> | `while` <while> | `switch` <switch> |  `break` | `continue` | `return` <return block> | `print` <print> | `input` <input> }
 
 <if> ::=  `(` <выражение> `)` `{` <body> `}` 
                { `elif` `(` <выражение>  `)` `{` <body> `}` }
