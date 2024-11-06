@@ -293,12 +293,24 @@ private:
         // Damir
         iter++;
         if (lexems[iter++].word != "(") error();
-        expression();
-        if (lexems[iter++].word != ";") error();
-        expression();
-        if (lexems[iter++].word != ";") error();
-        expression();
-        if (lexems[iter++].word != ")") error();
+        if (lexems[iter].word != ";") {
+            expression();
+            if (lexems[iter++].word != ";") error();
+        } else {
+            iter++;
+        }
+        if (lexems[iter].word != ";") {
+            expression();
+            if (lexems[iter++].word != ";") error();
+        } else {
+            iter++;
+        }
+        if (lexems[iter].word != ")") {
+            expression();
+            if (lexems[iter++].word != ")") error();
+        } else {
+            iter++;
+        }
 
         if (lexems[iter++].word != "{") error();
 
