@@ -378,6 +378,13 @@ private:
             func_case();
         }
 
+        if (lexems[iter].word == "default") {
+            iter++;
+            if (lexems[iter++].word != "{") error();
+            body();
+            if (lexems[iter++].word != "}") error();
+        }
+
         if (lexems[iter++].word != "}") error();
     }
 
