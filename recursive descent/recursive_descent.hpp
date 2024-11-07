@@ -153,15 +153,22 @@ private:
     }
 
     void L3() {
-        L2();
+        L23();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "*" || lexems[iter].word == "/" || lexems[iter].word == "%") {
                 ++iter;
-                L2();
+                L23();
             } else {
                 break;
             }
         }
+    }
+
+    void L23 () {
+        if (lexems[iter].type == 8) {
+            ++iter;
+            L2();
+        } else L2();
     }
 
     void L2() {
