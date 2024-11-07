@@ -2,6 +2,7 @@ int
 string
 bool
 char
+void
 array
 float
 for

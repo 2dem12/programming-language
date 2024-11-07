@@ -27,6 +27,7 @@ std::vector<inf_lexem> lexer() {
     } catch (const std::pair<int, std::string> & e) {
         throw invalid_argument(e.first, e.second);
     }
+    std::cout << lexems.size() << std::endl;
     for (auto i : lexems) {
         std::cout << i.type << " " << i.word << " " << i.num_len << '\n';
     }

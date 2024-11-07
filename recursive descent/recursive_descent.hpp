@@ -10,6 +10,35 @@ public:
 private:
     std::vector<inf_lexem> lexems;
     int iter = 0;
+    struct parameter {
+        parameter(std::string type_, std::string id_): type(type_), id(id_) {}
+        std::string type;
+        std::string id;
+        bool operator == (const parameter & other) {
+            if (type == other.type) return 1;
+            return 0;
+        }
+    };
+    struct func {
+        func(std::string type_, std::string name_) : type_answer(type_), name(name_) {}
+        bool operator == (const func & function) {
+            if (name == function.name
+                && parameters.size() == function.parameters.size()) {
+                for (int i = 0; i < parameters.size(); ++i) {
+                    if (* parameters[i] == * function.parameters[i]) {
+                        continue;
+                    }
+                    return 0;
+                }
+                return 1;
+            }
+            return 0;
+        }
+        std::string name;
+        std::string type_answer;
+        std::vector <parameter *> parameters;
+    };
+    std::vector<func *> functions;
 
     void error() {
         // throw std::runtime_error("Unexpected token: " + lexems[iter].word);
@@ -19,7 +48,7 @@ private:
 
     void start() {
         while (iter < lexems.size()) {
-            if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char") {
+            if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char" || lexems[iter].word == "bool" || lexems[iter].word == "void") {
                 ++iter;
                 id();
                 if (lexems[iter].word == "(") {
@@ -36,7 +65,7 @@ private:
     }
 
     void type() {
-        if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char") {
+        if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char" || lexems[iter].word == "bool") {
             iter++;
         } else {
             error();
@@ -44,7 +73,7 @@ private:
     }
 
     bool type(bool chang) {
-        if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char") {
+        if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char" || lexems[iter].word == "bool") {
             return true;
         } else {
             return false;
@@ -459,21 +488,49 @@ private:
         command_block();
     }
 
-    void function() {
-        type();
-        id();
-        if (lexems[iter++].word != "(") error();
+    void push_function (func * function, int line) {
+        for (func * f : functions) {
+            if (* function == * f) {
+                std::string s = "in line " + std::to_string(line);
+                s += " the same function name already exists : ";
+                throw std::runtime_error( s + f->name);
+            }
+        }
+        functions.push_back(function);
+    }
 
+    void function() {
+        std::string s_type = lexems[iter].word;
+        if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char" || lexems[iter].word == "bool"|| lexems[iter].word == "void") {
+            iter++;
+        } else {
+            error();
+        }
+        std::string s_id = lexems[iter].word;
+        int line = lexems[iter].num_len;
+        id();
+        func * cur_func = new func(s_type, s_id);
+        if (lexems[iter++].word != "(") error();
+        std::string p_type, p_id;
         if (type(true)) {
+            p_type = lexems[iter].word;
             type();
+            p_id = lexems[iter].word;
             id();
+            cur_func->parameters.push_back(new parameter(p_type, p_id));
         }
         while (lexems[iter].type == 7) {
             iter++;
+            p_type = lexems[iter].word;
             type();
+            p_id = lexems[iter].word;
             id();
+            cur_func->parameters.push_back(new parameter(p_type, p_id));
         }
         if (lexems[iter++].word != ")") error();
+        push_function(cur_func, line);
+        //create_scope
+        //push_id
 
         if (lexems[iter++].word != "{") error();
 
@@ -481,11 +538,12 @@ private:
 
         if (lexems[iter++].word != "}") error();
     }
+
+
 };
 
 void solve() {
     Parser parser(lexer());
-
     try {
         parser.pars();
         std::cout << "Parsing succeeded.\n";
