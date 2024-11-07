@@ -2,7 +2,7 @@
 
 <функция> ::= <тип> <id> `(` [ <тип> <id> { `,` <тип> <id>} ] `)` { <body> }
 
-/<body> ::= { <команда блока> ; }
+\<body> ::= { <команда блока> ; }
 
 <команда блока> ::=  { <выражение> | ( `int` | `double` | `string` | `bool` ) <определение переменных> | `if` <if> | `for` <for> | `while` <while> | `switch` <switch> |  `break` | `continue` | `return` <return block> | `print` <print> | `input` <input> }
 
