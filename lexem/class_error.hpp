@@ -4,7 +4,7 @@
 class invalid_argument : public std::exception {
 public:
     // Конструктор с инициализацией
-    invalid_argument(int num_line, const std::string& line)
+    invalid_argument(int num_line, std::string& line)
         : num_line_(std::to_string(num_line)), line_(line) {
         ans_ = "Invalid symbols \"" + line_ + "\" in line: " + num_line_;
     }
