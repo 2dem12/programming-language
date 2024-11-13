@@ -25,7 +25,8 @@ std::vector<inf_lexem> lexer() {
     try {
         lexical_analysis(lexems, Bor);
     } catch (const std::pair<int, std::string> & e) {
-        throw invalid_argument(e.first, e.second);
+        std::string s = e.second;
+        throw invalid_argument(e.first, s);
     }
     std::cout << lexems.size() << std::endl;
     for (auto i : lexems) {

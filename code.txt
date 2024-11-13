@@ -1,13 +1,8 @@
 int main() {
     int a = 10;
-    b = 15;
-    for (i= 0; i < 10; ++i) {
-        if (a % 2 != 0) {
-            print(1);
-        } else {
-            print(2);
-        }
-    }
+    int b = 15;
+    string s;
+    (a -= s);
     while (a == b) {
         if ((a - b) == 10) {
             for (; ;) {
@@ -22,15 +17,6 @@ int main() {
         }
     }
 
-    switch(x) {
-            case 1 {
-                print(1);
-                break;
-               }
-            case 2 {
-            print(q);
-                break;
-                }
-        }
+
 
 }
