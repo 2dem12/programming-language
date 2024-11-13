@@ -11,20 +11,23 @@ public:
 private:
     std::vector<inf_lexem> lexems;
     int iter = 0;
-    struct parameter {
-        parameter(std::string type_, std::string id_): type(type_), id(id_) {}
-        std::string type;
-        std::string id;
-        bool operator == (const parameter & other) {
-            if (type == other.type) return 1;
-            return 0;
-        }
-    };
     struct func {
         func(std::string type_, std::string name_) : type_answer(type_), name(name_) {}
         bool operator == (const func & function) {
             if (name == function.name
                 && parameters.size() == function.parameters.size()) {
+                for (int i = 0; i < parameters.size(); ++i) {
+                    if (* parameters[i] == * function.parameters[i]) {
+                        continue;
+                    }
+                    return 0;
+                }
+                return 1;
+                }
+            return 0;
+        }
+        bool equals (const func & function) {
+            if (parameters.size() == function.parameters.size()) {
                 for (int i = 0; i < parameters.size(); ++i) {
                     if (* parameters[i] == * function.parameters[i]) {
                         continue;
@@ -40,12 +43,113 @@ private:
         std::vector <parameter *> parameters;
     };
     std::vector<func *> functions;
+    tree_tid Tree;
+    struct stck {
+        std::stack <std::string> types;
+        std::stack <std::string> operations;
+        std::string pr [3] = {"int", "float", "bool"};
+        std::string sc [2] = {"string", "array"};
+        void pushOp (std::string op) {
+            operations.push(op);
+        }
+        void pushT (std::string type) {
+            types.push(type);
+        }
+        bool type1 (std::string type) {
+            for (int i = 0; i < 3; ++i) {
+                if (type == pr[i]) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        void clear () {
+            while (!operations.empty()) {
+                operations.pop();
+            }
+            while (!types.empty()) {
+                types.pop();
+            }
+        }
+    };
+    stck stack;
+
+    void check_bin () {
+        std::string lhs = stack.types.top();
+        stack.types.pop();
+        std::string rhs = stack.types.top();
+        stack.types.pop();
+        std::string ops = stack.operations.top();
+        stack.operations.pop();
+        std::cout << lhs << " " << ops << " " << rhs << std::endl;
+        if (stack.type1(lhs) && stack.type1 (rhs)) {
+            if (lhs == "int" || rhs == "int") {
+                stack.types.push("int");
+            } else if (lhs == "float" || rhs == "float") {
+                stack.types.push("float");
+            } else {
+                stack.types.push("bool");
+            }
+        } else if (lhs == "string" && rhs == "string") {
+            std::cout << "here";
+            if (ops == "+" || ops == "==" || ops == "!=") {
+                stack.types.push("string");
+                return;
+            }
+            error(" incorrect operation to string ");
+            //error(line, " incorrect operation to string: ", ops);
+        } else {
+            error(" incorrect types");
+        }
+    }
+    void check_unary () {
+        std::string type = stack.types.top();
+        stack.types.pop();
+        std::string ops = stack.operations.top();
+        stack.operations.pop();
+        if (stack.type1(type)) {
+            if ((ops == "++" || ops == "--") && type == "bool") {
+                error(" impossible to do this operation to type bool: ");
+            }
+            stack.types.push(type);
+        } else {
+            if (ops == "*" || ops == "&") {
+                stack.types.push(type);
+            } else error(" incorrect operation to " + type);
+        }
+    }
+
+    void check_bool () {
+        std::string type = stack.types.top();
+        stack.types.pop();
+        if (type == "int" || type == "bool" || type == "float") {
+
+        } else error(" not a boollean expression, type is: " + type);
+    }
+
 
     void error() {
         // throw std::runtime_error("Unexpected token: " + lexems[iter].word);
         // throw invalid_argument(lexems[iter].num_len, lexems[iter].word);
         throw invalid_argument(lexems[iter-1].num_len, lexems[iter-1].word);
     }
+
+    void error (int line, std::string msg) {
+        std::string s = "in line " + std::to_string(line);
+        s += msg;
+        throw std::runtime_error(s);
+    }
+
+    void error (int line, std::string msg, std::string op) {
+        std::string s = "in line " + std::to_string(line);
+        s += msg + op;
+        throw std::runtime_error(s);
+    }
+
+    void error (std::string msg) {
+        throw std::runtime_error(msg);
+    }
+
 
     void start() {
         while (iter < lexems.size()) {
@@ -57,7 +161,8 @@ private:
                     function();
                 } else {
                     --iter;
-                    defining_variables();
+                    //defining_variables();
+                    many_variables();
                     checkPoint();
                 }
 
@@ -90,14 +195,16 @@ private:
     }
 
     void expression() {
-        L12();
+        L11();
     }
-    void L12 () {
+   void L12 () {
         L11();
         while (iter < lexems.size()) {
             if (lexems[iter].word == ",") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L11();
+                check_bin();
             } else {
                 break;
             }
@@ -108,8 +215,10 @@ private:
         L10();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "=" || lexems[iter].word == "+=" || lexems[iter].word == "-=") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L10();
+                check_bin();
             } else {
                 break;
             }
@@ -119,8 +228,10 @@ private:
         L9();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "||") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L9();
+                check_bin();
             } else {
                 break;
             }
@@ -130,8 +241,10 @@ private:
         L8();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&&") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L8();
+                check_bin();
             } else {
                 break;
             }
@@ -141,8 +254,10 @@ private:
         L7();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "|") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L7();
+                check_bin();
             } else {
                 break;
             }
@@ -152,8 +267,10 @@ private:
         L6();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L6();
+                check_bin();
             } else {
                 break;
             }
@@ -163,8 +280,10 @@ private:
         L4();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "<=" || lexems[iter].word == ">=" || lexems[iter].word == "==" || lexems[iter].word == ">" || lexems[iter].word == "<" || lexems[iter].word == "!=") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L4();
+                check_bin();
             } else {
                 break;
             }
@@ -174,8 +293,10 @@ private:
         L3();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "+" || lexems[iter].word == "-") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L3();
+                check_bin();
             } else {
                 break;
             }
@@ -186,8 +307,10 @@ private:
         L23();
         while (iter < lexems.size()) {
             if (lexems[iter].word == "*" || lexems[iter].word == "/" || lexems[iter].word == "%") {
+                stack.pushOp(lexems[iter].word);
                 ++iter;
                 L23();
+                check_bin();
             } else {
                 break;
             }
@@ -196,8 +319,10 @@ private:
 
     void L23 () {
         if (lexems[iter].type == 8) {
+            stack.pushOp(lexems[iter].word);
             ++iter;
             L2();
+            check_unary();
         } else L2();
     }
 
@@ -213,34 +338,82 @@ private:
                 error();
             }
         } else if (lexems[iter].word == "++") {
+            stack.pushOp(lexems[iter].word);
             ++iter;
             L1();
+            check_unary();
         } else error();
     }
-
     void L1() {
+        //std::cout << "here " << lexems[iter].word << " " << lexems[iter].type <<std::endl;
         if (lexems[iter].type == 3) {
+            if (lexems[iter].word[0] == '"') {
+                stack.pushT("string");
+            } else {
+                bool fl = 0;
+                for (auto u : lexems[iter].word) {
+                    if (u == '.') {
+                        fl = 1;
+                        break;
+                    }
+                }
+                if (fl) stack.pushT("float");
+                else stack.pushT("int");
+            }
             ++iter;
         } else if (lexems[iter].type == 2) {
             if (lexems[iter + 1].word == "(") {
-                ++iter;
                 function_call();
-            } else ++iter;
+            } else {
+                std::string type = Tree.check_id(lexems[iter].word);
+               // std::cout << type << " " << lexems[iter].word << std::endl;
+                stack.pushT(type);
+                ++iter;
+            }
         } else error();
     }
 
+    void check_expression (std::string function, int line) {
+        for (func * f : functions) {
+            if (f->name == function) {
+                return;
+            }
+        }
+        std::string s = "in line " + std::to_string(line);
+        s += " function does not exist : ";
+        throw std::runtime_error( s + function);
+    }
+
+    std::string check_func (func * function) {
+        for(auto u: functions) {
+            if (function->equals(*u)) {
+                return u->type_answer;
+            }
+        }
+        error("function call is incorrect: function does not exist");
+    }
+
     void function_call () {
+        id();
+        check_expression(lexems[iter - 1].word, lexems[iter - 1].num_len);
+        std::vector <parameter *> args;
         if (lexems[iter].word == "(") {
             ++iter;
         } else error();
+        func * functionCall = new func(" ", " ");
         expression();
+        functionCall->parameters.push_back(new parameter(stack.types.top()));
+        stack.types.pop();
         while (lexems[iter].word == ",") {
             ++iter;
             expression();
+            functionCall->parameters.push_back(new parameter(stack.types.top()));
+            stack.types.pop();
         }
         if (lexems[iter].word == ")") {
             ++iter;
         } else error();
+        stack.pushT(check_func(functionCall));
     }
 
     void literal() {
@@ -249,9 +422,20 @@ private:
         } else error();
     }
 
+    void many_variables () {
+        std::string type = lexems[iter - 1].word;
+        defining_variables(type);
+        while(lexems[iter].word == ",") {
+            ++iter;
+            defining_variables(type);
+        }
+    }
 
-    void defining_variables() {
+    void defining_variables(std::string type_) {
         id();
+        parameter param(type_, lexems[iter-1].word);
+        //std::cout << lexems[iter - 2]. word << " " <<  lexems[iter - 1].word << std::endl;
+        Tree.push_id(param);
         if (lexems[iter].word == "=") {
             ++iter;
             expression();
@@ -276,7 +460,6 @@ private:
                 } else error();
             }
         }
-
     }
 
     void input () {
@@ -312,18 +495,21 @@ private:
         if (lexems[iter++].word != "}") error();
     }
 
-    void func_elif() {
+     void func_elif() {
         iter++; // "elif" dont ++, becos we ++ now
         if (lexems[iter++].word != "(") error();
 
         expression();
+        check_bool();
 
         if (lexems[iter++].word != ")") error();
         if (lexems[iter++].word != "{") error();
-
+        Tree.create_scope();
+        stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
+        Tree.exit_scope();
 
         if (lexems[iter].word == "elif") func_elif();
     }
@@ -333,13 +519,16 @@ private:
         if (lexems[iter++].word != "(") error();
 
         expression();
+        check_bool();
 
         if (lexems[iter++].word != ")") error();
         if (lexems[iter++].word != "{") error();
-
+        Tree.create_scope();
+        stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
+        Tree.exit_scope();
 
         if (lexems[iter].word == "elif") func_elif();
         if (lexems[iter].word == "else") func_else();
@@ -351,28 +540,33 @@ private:
         if (lexems[iter++].word != "(") error();
         if (lexems[iter].word != ";") {
             expression();
+            stack.clear();
             if (lexems[iter++].word != ";") error();
         } else {
             iter++;
         }
         if (lexems[iter].word != ";") {
             expression();
+            check_bool();
             if (lexems[iter++].word != ";") error();
         } else {
             iter++;
         }
         if (lexems[iter].word != ")") {
             expression();
+            stack.clear();
             if (lexems[iter++].word != ")") error();
         } else {
             iter++;
         }
 
         if (lexems[iter++].word != "{") error();
-
+        Tree.create_scope();
+        stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
+        Tree.exit_scope();
     }
 
     void func_while() {
@@ -380,15 +574,17 @@ private:
         iter++;
         if (lexems[iter++].word != "(") error();
         expression();
+        check_bool();
         if (lexems[iter++].word != ")") error();
 
         if (lexems[iter++].word != "{") error();
-
+        Tree.create_scope();
+        stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
+        Tree.exit_scope();
     }
-
     void func_case() {
         iter++;
         expression();
@@ -444,7 +640,8 @@ private:
     void command_block() {
         if (lexems[iter].word == "int" || lexems[iter].word == "double" || lexems[iter].word == "string" || lexems[iter].word == "bool") {
             ++iter;
-            defining_variables();
+            //defining_variables();
+            many_variables();
             checkPoint();
         } else if (lexems[iter].word == "if") {
             func_if();
@@ -534,10 +731,10 @@ private:
         //push_id
 
         if (lexems[iter++].word != "{") error();
-
+        Tree.create_scope();
         body();
-
         if (lexems[iter++].word != "}") error();
+        Tree.exit_scope();
     }
 
 
