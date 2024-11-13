@@ -81,6 +81,7 @@ private:
         stack.types.pop();
         std::string ops = stack.operations.top();
         stack.operations.pop();
+        std::cout << lhs << " " << ops << " " << rhs << std::endl;
         if (stack.type1(lhs) && stack.type1 (rhs)) {
             if (lhs == "int" || rhs == "int") {
                 stack.types.push("int");
@@ -422,16 +423,17 @@ private:
     }
 
     void many_variables () {
-        defining_variables();
+        std::string type = lexems[iter - 1].word;
+        defining_variables(type);
         while(lexems[iter].word == ",") {
             ++iter;
-            defining_variables();
+            defining_variables(type);
         }
     }
 
-    void defining_variables() {
+    void defining_variables(std::string type_) {
         id();
-        parameter param(lexems[iter - 2].word, lexems[iter-1].word);
+        parameter param(type_, lexems[iter-1].word);
         //std::cout << lexems[iter - 2]. word << " " <<  lexems[iter - 1].word << std::endl;
         Tree.push_id(param);
         if (lexems[iter].word == "=") {
@@ -458,7 +460,6 @@ private:
                 } else error();
             }
         }
-        std::cout << lexems[iter].word;
     }
 
     void input () {

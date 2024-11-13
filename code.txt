@@ -1,20 +1,8 @@
 int main() {
-    int a = 10;
-    int b = 15;
+    int a = 10, b = 15;
     string s;
-    (a -= s);
-    while (a == b) {
-        if ((a - b) == 10) {
-            for (; ;) {
-                break;
-            }
-        } elif (a - b <= 10) {
-            print(14);
-        } elif (a - b > 15) {
-            print(467);
-        } else {
-            print(39);
-        }
+    if (a == b) {
+
     }
 
 
