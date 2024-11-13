@@ -2,14 +2,21 @@
 #include <utility>
 #include "check_func.hpp"
 
+bool longComment = 0;
 
 std::vector<std::string> splitIntoWordsAndPunctuation(const std::string& text) {
     std::vector<std::string> result;
     std::string currentWord;
-
     for (size_t i = 0; i < text.length(); ++i) {
         char ch = text[i];
-
+        // if (ch == '#') {
+        //     if (longComment) longComment = false;
+        //     else {
+        //         longComment = true;
+        //         return result;
+        //     }
+        // }
+        // if (longComment) return result;
         if (currentWord.empty() && ch != ' ') {
             currentWord += ch;
             continue;
@@ -65,6 +72,15 @@ void lexical_analysis(std::vector<inf_lexem>& lexems, bor& Bor) {
     while (line != nullptr) {
         bool first = 1;
         for (auto i : splitIntoWordsAndPunctuation(line)) {
+            if (i == "#" && longComment == false) {
+                longComment = true;
+                continue;
+            } else if (i == "#" && longComment == true) {
+                longComment = false;
+                continue;
+            }
+            if (longComment == true) continue;
+
             if (Bor.exists(i)) {
                 lexems.emplace_back(1, i, cnt_line);
             } else if (is_int(i) || i[0] == '"') {

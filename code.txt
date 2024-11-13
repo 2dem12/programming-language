@@ -7,6 +7,8 @@ int f (string a) {
 int main() {
     int a = 10, b;
     1+2, 3+4;
+    int swap;
+    a = b, swap, (a, b);
     float floatt = 1.5;
     string stringg;
     (a + b) * floatt;
