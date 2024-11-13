@@ -1,4 +1,5 @@
 #include "../lexem/lexem_func.hpp"
+#include "TID.hpp"
 
 struct Parser {
 public:
