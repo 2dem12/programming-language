@@ -1,10 +1,33 @@
+int f (int a) {
+
+}
+int f (string a) {
+
+}
 int main() {
-    int a = 10, b = 15;
-    string s;
-    if (a == b) {
-
+    int a = 10, b;
+    1+2, 3+4;
+    float floatt = 1.5;
+    string stringg;
+    (a + b) * floatt;
+    int i;
+    f("aaa");
+    for (i = 0; i < 10; ++i) {
+        if (a % 2 != 0) {
+            print(1);
+        } else {
+            print(2);
+        }
     }
-
-
-
+    while (a == b) {
+        if ((a - b) == 10) {
+            for (;;) {}
+        } elif (a - b <= 10) {
+            print (14);
+        } elif (a - b > 15) {
+            print (467);
+        } else {
+            print (39);
+        }
+    }
 }
