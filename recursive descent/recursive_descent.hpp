@@ -395,12 +395,11 @@ private:
     void function_call () {
         id();
         check_expression(lexems[iter - 1].word, lexems[iter - 1].num_len);
-        std::vector <parameter *> args;
         if (lexems[iter].word == "(") {
             ++iter;
         } else error();
         func * functionCall = new func(" ", " ");
-        expression();
+        expression1();
         functionCall->parameters.push_back(new parameter(stack.types.top()));
         stack.types.pop();
         while (lexems[iter].word == ",") {
@@ -412,6 +411,7 @@ private:
         if (lexems[iter].word == ")") {
             ++iter;
         } else error();
+
         stack.pushT(check_func(functionCall));
     }
 
