@@ -365,6 +365,7 @@ private:
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
+                if (type == "") throw std::runtime_error("incorrect type");
                // std::cout << type << " " << lexems[iter].word << std::endl;
                 stack.pushT(type);
                 ++iter;
@@ -898,6 +899,7 @@ private:
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
+                if (type == "") throw std::runtime_error("Invalid type");
                // std::cout << type << " " << lexems[iter].word << std::endl;
                 stack.pushT(type);
                 ++iter;
