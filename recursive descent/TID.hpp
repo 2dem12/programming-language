@@ -64,12 +64,15 @@ public:
     }
 
     std::string check_id(std::string x) {
+        //std::cout << x << " HERE"<< std::endl;
         for (parameter& i : vec) {
+            std::cout << i.id << std::endl;
             if (i.id == x) {
                 return i.type;
             }
         }
-        return "";
+        throw std::invalid_argument("such variable does not exist");
+        //return "";
     }
 
 private:
@@ -81,10 +84,10 @@ struct tree_tid {
 public:
     void create_scope() {
         auto new_scope = std::make_unique<tree_tid>();
-        new_scope->father_ = this;
+        new_scope->father_ = current_scope_;
         //new_scope->me_.push_id(const_cast<parameter&>(x));
-        child_.push_back(std::move(new_scope));
-        current_scope_ = child_.back().get();
+        current_scope_->child_.push_back(std::move(new_scope));
+        current_scope_ = current_scope_->child_.back().get();
     }
 
     void exit_scope() {
@@ -94,22 +97,16 @@ public:
     }
 
     void push_id(parameter& x) {
-        me_.push_id(x);
+        current_scope_->me_.push_id(x);
+        // me_.push_id(x);
     }
 
+    std::string check_id(parameter& x) {
+        return current_scope_->me_.check_id(x);
+    }
     std::string check_id(std::string x) {
-        tree_tid* scope = current_scope_;
-        while (scope) {
-            std::string result = scope->me_.check_id(x);
-            if (!result.empty()) {
-                return result;
-            }
-            scope = scope->father_;
-        }
-        return "";
+        return current_scope_->me_.check_id(x);
     }
-
-
 
     std::string check_id(const parameter& x) {
         tree_tid* scope = current_scope_;
@@ -129,3 +126,4 @@ private:
     std::vector<std::unique_ptr<tree_tid>> child_;
     tree_tid* current_scope_ = this;
 };
+
