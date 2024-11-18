@@ -64,15 +64,12 @@ public:
     }
 
     std::string check_id(std::string x) {
-        //std::cout << x << " HERE"<< std::endl;
         for (parameter& i : vec) {
-            std::cout << i.id << std::endl;
             if (i.id == x) {
                 return i.type;
             }
         }
-        throw std::invalid_argument("such variable does not exist");
-        //return "";
+        return "";
     }
 
 private:
@@ -100,12 +97,19 @@ public:
         me_.push_id(x);
     }
 
-    std::string check_id(parameter& x) {
-        return me_.check_id(x);
-    }
     std::string check_id(std::string x) {
-        return me_.check_id(x);
+        tree_tid* scope = current_scope_;
+        while (scope) {
+            std::string result = scope->me_.check_id(x);
+            if (!result.empty()) {
+                return result;
+            }
+            scope = scope->father_;
+        }
+        return "";
     }
+
+
 
     std::string check_id(const parameter& x) {
         tree_tid* scope = current_scope_;
