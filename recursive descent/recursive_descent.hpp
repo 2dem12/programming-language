@@ -394,6 +394,7 @@ private:
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
+                if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 // std::cout << type << " " << lexems[iter].word << std::endl;
                 stack.pushT(type);
                 ++iter;
@@ -463,7 +464,7 @@ private:
         id();
         std::string name = lexems[iter - 1].word;
         parameter param(type_, name);
-        Tree.push_id(param);
+        // Tree.push_id(param);
         if (lexems[iter].word == "=") {
             ++iter;
             expression1();
@@ -491,6 +492,7 @@ private:
             }
             return;
         }
+        Tree.push_id(param);
         //parameter param(type_, name);
         //Tree.push_id(param);
     }
@@ -663,14 +665,6 @@ private:
         } else error();
     }
 
-    void return_block() {
-        if (lexems[iter].word == ";") {
-            ++iter;
-        } else {
-            expression();
-            checkPoint();
-        }
-    }
 
     void command_block() {
         if (lexems[iter].word == "int" || lexems[iter].word == "float" || lexems[iter].word == "string" || lexems[iter].
@@ -693,9 +687,6 @@ private:
         } else if (lexems[iter].word == "continue") {
             iter++;
             checkPoint();
-        } else if (lexems[iter].word == "return") {
-            iter++;
-            return_block();
         } else if (lexems[iter].word == "input") {
             ++iter;
             input();
@@ -705,7 +696,7 @@ private:
             print();
             checkPoint();
         } else {
-            if (lexems[iter].word == "}") {
+            if (lexems[iter].word == "}" || lexems[iter].word == "return") {
                 return;
             } else {
                 expression();
@@ -728,6 +719,22 @@ private:
             }
         }
         functions.push_back(function);
+    }
+
+    void check_return (func * cur_func) {
+        if (lexems[iter].word == "return") {
+            ++iter;
+        } else throw std::runtime_error("function does not contain a return");
+        if (cur_func->type_answer == "void") {
+            checkPoint();
+            return;
+        }
+        expression1();
+        std::string res = stack.types.top();
+        stack.types.pop();
+        if (res == cur_func->type_answer) {
+            checkPoint();
+        } else error("return does not match function parameters");
     }
 
     void function() {
@@ -768,6 +775,8 @@ private:
         if (lexems[iter++].word != "{") error();
         Tree.create_scope();
         body();
+        std::cout << lexems[iter].word << std::endl;
+        check_return(cur_func);
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
     }
@@ -938,6 +947,7 @@ private:
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
+                if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 stack.pushT(type);
                 ++iter;
             }
