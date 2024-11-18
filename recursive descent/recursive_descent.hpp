@@ -773,6 +773,7 @@ private:
             cur_func->parameters.push_back(x);
             Tree.push_id(*x);
         }
+
         if (lexems[iter++].word != ")") error();
         push_function(cur_func, line);
         //create_scope
