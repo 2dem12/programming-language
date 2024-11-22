@@ -393,8 +393,7 @@ private:
             if (lexems[iter + 1].word == "(") {
                 function_call();
             } else {
-                parameter a("int", lexems[iter].word);
-                std::string type = Tree.check_id(a);
+                std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 // std::cout << type << " " << lexems[iter].word << std::endl;
                 stack.pushT(type);
@@ -953,8 +952,7 @@ private:
             if (lexems[iter + 1].word == "(") {
                 function_call();
             } else {
-                parameter a("int", lexems[iter].word);
-                std::string type = Tree.check_id(a);
+                std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 stack.pushT(type);
                 ++iter;

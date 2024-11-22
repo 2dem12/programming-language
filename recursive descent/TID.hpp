@@ -71,8 +71,8 @@ public:
                 return i.type;
             }
         }
-        throw std::invalid_argument("such variable does not exist");
-        //return "";
+        // throw std::invalid_argument("such variable does not exist");
+        return "";
     }
 
 private:
@@ -100,7 +100,7 @@ public:
         current_scope_->me_.push_id(x);
         // me_.push_id(x);
     }
-    std::string check_id(std::string x) {
+    std::string check_id_me(std::string x) {
         return current_scope_->me_.check_id(x);
     }
 
@@ -108,6 +108,18 @@ public:
         tree_tid* scope = current_scope_;
         while (scope) {
             std::string result = scope->me_.check_id(const_cast<parameter&>(x));
+            if (!result.empty()) {
+                return result;
+            }
+            scope = scope->father_;
+        }
+        return "";
+    }
+
+    std::string check_id(const std::string& x) {
+        tree_tid* scope = current_scope_;
+        while (scope) {
+            std::string result = scope->me_.check_id(const_cast<std::string&>(x));
             if (!result.empty()) {
                 return result;
             }
