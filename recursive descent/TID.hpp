@@ -100,10 +100,6 @@ public:
         current_scope_->me_.push_id(x);
         // me_.push_id(x);
     }
-
-    std::string check_id(parameter& x) {
-        return current_scope_->me_.check_id(x);
-    }
     std::string check_id(std::string x) {
         return current_scope_->me_.check_id(x);
     }
