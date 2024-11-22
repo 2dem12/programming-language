@@ -751,13 +751,17 @@ private:
         id();
         func *cur_func = new func(s_type, s_id);
         if (lexems[iter++].word != "(") error();
+        Tree.create_scope();
         std::string p_type, p_id;
         if (type(true)) {
             p_type = lexems[iter].word;
             type();
             p_id = lexems[iter].word;
             id();
-            cur_func->parameters.push_back(new parameter(p_type, p_id));
+            //cur_func->parameters.push_back(new parameter(p_type, p_id));
+            parameter * x = new parameter(p_type, p_id);
+            cur_func->parameters.push_back(x);
+            Tree.push_id(*x);
         }
         while (lexems[iter].type == 7) {
             iter++;
@@ -765,15 +769,17 @@ private:
             type();
             p_id = lexems[iter].word;
             id();
-            cur_func->parameters.push_back(new parameter(p_type, p_id));
+            parameter * x = new parameter(p_type, p_id);
+            cur_func->parameters.push_back(x);
+            Tree.push_id(*x);
         }
+
         if (lexems[iter++].word != ")") error();
         push_function(cur_func, line);
         //create_scope
         //push_id
 
         if (lexems[iter++].word != "{") error();
-        Tree.create_scope();
         body();
         std::cout << lexems[iter].word << std::endl;
         check_return(cur_func);
@@ -964,4 +970,3 @@ void solve() {
         std::cerr << "Parsing error: " << e.what() << '\n';
     }
 }
-

@@ -126,4 +126,3 @@ private:
     std::vector<std::unique_ptr<tree_tid>> child_;
     tree_tid* current_scope_ = this;
 };
-
