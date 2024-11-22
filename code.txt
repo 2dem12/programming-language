@@ -1,38 +1,6 @@
-int f (int a) {
-int b = 1;
-return 1;
-}
-int f (string a) {
-   return 1;
-}
 
 int main() {
-    f(12);
-    f(1);
-    int a = 10, b;
-    1+2, 3+4;
-    int swap;
-    a = b, swap, (a, b);
-    float floatt = 1.5;
-    string stringg, j;
-
-    (a + b) * floatt ;
-    //(a + b) * j;
-    int i;
-    f("aaa");
-    while(i == 0) {
-        a = 1;
-    }
-    #while (a == b) {
-        if ((a - b) == 10) {
-            for (;;) {}
-        } elif (a - b <= 10) {
-            print (14);
-        } elif (a - b > 15) {
-            print (467);
-        } else {
-            print (39);
-        }
-    }#
+    int a, b;
+    (a + b * b) * a;
    return 0;
 }
