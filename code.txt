@@ -22,6 +22,8 @@ int main() {
     f("aaa");
     while(i == 0) {
         a = 1;
+        string a;
+        //a = a + "777";
     }
     #while (a == b) {
         if ((a - b) == 10) {
@@ -34,5 +36,10 @@ int main() {
             print (39);
         }
     }#
+    #while(i == 0) {
+             a = 1;
+             string a;
+             a = a + "777";
+         }#
    return 0;
 }

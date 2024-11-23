@@ -107,8 +107,8 @@ private:
                 stack.types.push("bool");
             }
         } else if (lhs == "string" && rhs == "string") {
-            std::cout << "here";
-            if (ops == "+" || ops == "==" || ops == "!=") {
+            //std::cout << "here";
+            if (ops == "+" || ops == "==" || ops == "!=" || ops == "=" || ops == "+=" || ops == "-=") {
                 stack.types.push("string");
                 return;
             }
