@@ -2,10 +2,11 @@
 #include "TID.hpp"
 #include <stack>
 #include <utility>
+#include "../generation/creat_poliz.hpp"
 
 struct Parser {
 public:
-    Parser(std::vector<inf_lexem> lexems_) : lexems(std::move(lexems_)), iter(0) {
+    Parser(std::vector<inf_lexem> lexems_) : lexems(lexems_), iter(0) {
     }
 
     void pars() {
@@ -962,7 +963,8 @@ private:
 };
 
 void solve() {
-    Parser parser(lexer());
+    std::vector<inf_lexem> lex;
+    Parser parser(lex);
     try {
         parser.pars();
         std::cout << "Parsing succeeded.\n";
@@ -971,4 +973,5 @@ void solve() {
     } catch (const std::invalid_argument &e) {
         std::cerr << "Parsing error: " << e.what() << '\n';
     }
+
 }
