@@ -1013,7 +1013,7 @@ private:
             }
         }
     }
-
+    //#
     void R23() {
         if (lexems[iter].type == 8) {
             stack.pushOp(lexems[iter].word);
