@@ -135,6 +135,12 @@ private:
             }
             std::cout << std::endl;
         }
+        void clear_stack () {
+            while (!gstack.empty()) {
+                poliz.push_back(gstack.top());
+                gstack.pop();
+            }
+        }
         void clear() {
             while (!poliz.empty()) {
                 poliz.pop_back();
@@ -789,8 +795,11 @@ private:
     void checkPoint() {
         //std::cout << lexems[iter].word << std::endl;
         if (lexems[iter].word == ";") {
+            gen_stack.clear_stack();
+
             ++iter;
         } else error();
+
     }
 
 
