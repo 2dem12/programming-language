@@ -1,4 +1,3 @@
-
 int main() {
     string s;
     while (s, 1 == 1) {

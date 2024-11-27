@@ -53,6 +53,7 @@ private:
     };
     std::vector<func *> functions;
     tree_tid Tree;
+    /*
     struct general_stack {
         general_stack () {
             priority[","]  = 1;
@@ -130,7 +131,7 @@ private:
             }
         }
     };
-    general_stack gen_stack;
+    general_stack gen_stack;*/
     struct stck {
         std::stack<std::string> types;
         std::stack<std::string> operations;
@@ -302,7 +303,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == ",") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L11();
                 check_bin();
@@ -318,7 +319,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "=" || lexems[iter].word == "+=" || lexems[iter].word == "-=") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L10();
                 check_bin();
@@ -333,7 +334,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "||") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L9();
                 check_bin();
@@ -348,7 +349,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&&") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L8();
                 check_bin();
@@ -363,7 +364,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "|") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L7();
                 check_bin();
@@ -378,7 +379,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L6();
                 check_bin();
@@ -394,7 +395,7 @@ private:
             if (lexems[iter].word == "<=" || lexems[iter].word == ">=" || lexems[iter].word == "==" || lexems[iter].word
                 == ">" || lexems[iter].word == "<" || lexems[iter].word == "!=") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L4();
                 check_bin();
@@ -409,7 +410,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "+" || lexems[iter].word == "-") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L3();
                 check_bin();
@@ -424,7 +425,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "*" || lexems[iter].word == "/" || lexems[iter].word == "%") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 L23();
                 check_bin();
@@ -447,24 +448,24 @@ private:
         if (lexems[iter].type == 3 || lexems[iter].type == 2) {
             L1();
         } else if (iter < lexems.size() && lexems[iter].word == "(") {
-            gen_stack.push_other(lexems[iter].word);
+            //gen_stack.push_other(lexems[iter].word);
             ++iter;
             expression();
             if (iter < lexems.size() && lexems[iter].word == ")") {
-                gen_stack.push_other(lexems[iter].word);
+                //gen_stack.push_other(lexems[iter].word);
                 ++iter;
             } else {
                 error();
             }
         } else if (lexems[iter].word == "++") {
             stack.pushOp(lexems[iter].word);
-            gen_stack.push_operation(lexems[iter].word);
+            //gen_stack.push_operation(lexems[iter].word);
             ++iter;
             L1();
             check_unary();
         } else if (lexems[iter].word == "--") {
             stack.pushOp(lexems[iter].word);
-            gen_stack.push_operation(lexems[iter].word);
+            ///gen_stack.push_operation(lexems[iter].word);
             ++iter;
             L1();
             check_unary();
@@ -486,16 +487,16 @@ private:
                 if (fl) stack.pushT("float");
                 else stack.pushT("int");
             }
-            gen_stack.push_literal(lexems[iter].word);
+            //gen_stack.push_literal(lexems[iter].word);
             ++iter;
         } else if (lexems[iter].type == 2) {
             if (lexems[iter + 1].word == "(") {
-                gen_stack.push_literal(lexems[iter].word);
+                //gen_stack.push_literal(lexems[iter].word);
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
-                gen_stack.push_literal(lexems[iter].word);
+                //gen_stack.push_literal(lexems[iter].word);
                 stack.pushT(type);
                 ++iter;
             }
@@ -801,8 +802,8 @@ private:
             } else {
                 expression();
                 checkPoint();
-                gen_stack.print();
-                gen_stack.clear();
+                //gen_stack.print();
+                //gen_stack.clear();
             }
         }
         command_block();
@@ -898,7 +899,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "=" || lexems[iter].word == "+=" || lexems[iter].word == "-=") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R10();
                 check_bin();
@@ -913,7 +914,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "||") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R9();
                 check_bin();
@@ -928,7 +929,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&&") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R8();
                 check_bin();
@@ -943,7 +944,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "|") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R7();
                 check_bin();
@@ -958,7 +959,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "&") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R6();
                 check_bin();
@@ -974,7 +975,7 @@ private:
             if (lexems[iter].word == "<=" || lexems[iter].word == ">=" || lexems[iter].word == "==" || lexems[iter].word
                 == ">" || lexems[iter].word == "<" || lexems[iter].word == "!=") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R4();
                 check_bin();
@@ -989,7 +990,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "+" || lexems[iter].word == "-") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R3();
                 check_bin();
@@ -1004,7 +1005,7 @@ private:
         while (iter < lexems.size()) {
             if (lexems[iter].word == "*" || lexems[iter].word == "/" || lexems[iter].word == "%") {
                 stack.pushOp(lexems[iter].word);
-                gen_stack.push_operation(lexems[iter].word);
+                //gen_stack.push_operation(lexems[iter].word);
                 ++iter;
                 R23();
                 check_bin();
@@ -1017,7 +1018,7 @@ private:
     void R23() {
         if (lexems[iter].type == 8) {
             stack.pushOp(lexems[iter].word);
-            gen_stack.push_operation(lexems[iter].word);
+            //gen_stack.push_operation(lexems[iter].word);
             ++iter;
             R2();
             check_unary();
@@ -1028,18 +1029,18 @@ private:
         if (lexems[iter].type == 3 || lexems[iter].type == 2) {
             R1();
         } else if (iter < lexems.size() && lexems[iter].word == "(") {
-            gen_stack.push_other(lexems[iter].word);
+            //gen_stack.push_other(lexems[iter].word);
             ++iter;
             expression();
             if (iter < lexems.size() && lexems[iter].word == ")") {
-                gen_stack.push_other(lexems[iter].word);
+                //gen_stack.push_other(lexems[iter].word);
                 ++iter;
             } else {
                 error();
             }
         } else if (lexems[iter].word == "++" || lexems[iter].word == "--") {
             stack.pushOp(lexems[iter].word);
-            gen_stack.push_operation(lexems[iter].word);
+            //gen_stack.push_operation(lexems[iter].word);
             ++iter;
             R1();
             check_unary();
@@ -1061,17 +1062,17 @@ private:
                 if (fl) stack.pushT("float");
                 else stack.pushT("int");
             }
-            gen_stack.push_literal(lexems[iter].word);
+            //gen_stack.push_literal(lexems[iter].word);
             ++iter;
         } else if (lexems[iter].type == 2) {
             if (lexems[iter + 1].word == "(") {
-                gen_stack.push_literal(lexems[iter].word);
+                //gen_stack.push_literal(lexems[iter].word);
                 function_call();
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 stack.pushT(type);
-                gen_stack.push_literal(lexems[iter].word);
+                //gen_stack.push_literal(lexems[iter].word);
                 ++iter;
             }
         } else error();
