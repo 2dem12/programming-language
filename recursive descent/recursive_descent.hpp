@@ -11,11 +11,28 @@ public:
     void pars() {
         start();
     }
+    void generation () {
+        func * curFunc;
+        for (auto u: functions) {
+            if ("main" == u->name) {
+                curFunc  = u;
+            }
+        }
+        std::vector <std::string> params;
+        std::string res = get_function_call(curFunc, params);
+        std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
+    }
 
 private:
     std::vector<inf_lexem> lexems;
     int iter = 0;
-
+    enum class type_lexem {
+        adress_variable,
+        variable,
+        operation,
+        func_call,
+        literal
+    };
     struct func {
         func(std::string type_, std::string name_) : type_answer(std::move(type_)), name(std::move(name_)) {
         }
@@ -30,7 +47,7 @@ private:
                     return false;
                 }
                 return true;
-            }
+                }
             return false;
         }
 
@@ -50,10 +67,11 @@ private:
         std::string name;
         std::string type_answer;
         std::vector<parameter *> parameters;
+        std::vector <std::pair<std::string, type_lexem>> poliz;
+        tree_tid * TID;
     };
     std::vector<func *> functions;
     tree_tid Tree;
-
     struct general_stack {
         general_stack () {
             priority[","]  = 1;
@@ -79,16 +97,16 @@ private:
             priority["--"]  = 10;
         }
         std::stack <std::string> gstack;
-        std::vector <std::string> poliz;
+        std::vector <std::pair<std::string, type_lexem>> poliz;
         std::map <std::string, int> priority;
-        void push_literal (std::string& s) {
+        void push_literal (std::string& s, type_lexem type) {
             //std::cout << "PERFECT";
-            poliz.push_back(s);
+            poliz.push_back(std::make_pair(s, type));
         }
         void push_operation (std::string& s) {
             if (s == ",") {
                 while (!gstack.empty()) {
-                    poliz.push_back(gstack.top());
+                    poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                     gstack.pop();
                 }
             }
@@ -96,7 +114,7 @@ private:
                 std::string top = gstack.top();
                 while (priority[top] > priority[s] && top != "(") {
                     gstack.pop();
-                    poliz.push_back(top);
+                    poliz.push_back(std::make_pair(top, type_lexem::operation));
                     if (!gstack.empty()) {
                         top = gstack.top();
                     } else break;
@@ -109,7 +127,7 @@ private:
             if (s == "(") gstack.push(s);
             if (s == ",") {
                 while (!gstack.empty()) {
-                    poliz.push_back(gstack.top());
+                    poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                     gstack.pop();
                 }
                 gstack.push(s);
@@ -120,24 +138,24 @@ private:
                         gstack.pop();
                         return;
                     }
-                    poliz.push_back(gstack.top());
+                    poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                     gstack.pop();
                 }
             }
         }
         void print () {
             while (!gstack.empty()) {
-                poliz.push_back(gstack.top());
+                poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                 gstack.pop();
             }
             for (auto u: poliz) {
-                std::cout << u << " ";
+                std::cout << u.first << " ";
             }
             std::cout << std::endl;
         }
         void clear_stack () {
             while (!gstack.empty()) {
-                poliz.push_back(gstack.top());
+                poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                 gstack.pop();
             }
         }
@@ -182,6 +200,122 @@ private:
     };
 
     stck stack;
+    std::pair <std::string, type_lexem> get_hs (std::stack <std::pair<std::string, type_lexem>>& operands) {
+        std::pair <std::string, type_lexem> ans = operands.top();
+        operands.pop();
+        return ans;
+    }
+    std::string get_function_call(func * function, std::vector <std::string>& parameters) {
+        for (int i = 0; i < function->parameters.size(); i++) {
+            function->TID->set_value(function->parameters[i]->id, parameters[i]);
+        }
+        std::stack <std::pair<std::string, type_lexem>> operands;
+        for (auto u: function->poliz) {
+            std::cout << u.first;
+        }
+        std::cout << std::endl;
+        for (auto u: function->poliz) {
+            if (u.second == type_lexem::func_call) {
+                func * curFunc;
+                int size;
+                for (auto g: functions) {
+                    if (u.first == g->name) {
+                        curFunc  = g;
+                        size = g->parameters.size();
+                    }
+                }
+                std::vector <std::string> params;
+                while (size--) {
+                    std::pair <std::string, type_lexem> hs_ = get_hs(operands);
+                    if (hs_.second == type_lexem::variable || hs_.second == type_lexem::adress_variable) {
+                        hs_.first = function->TID->get_value(hs_.first);
+                    }
+                    params.push_back(hs_.first);
+                }
+                std::string res = get_function_call(curFunc, params);
+                std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
+            }else if (u.second != type_lexem::operation) {
+                operands.push(u);
+            } else if (u.first == "+") {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (lhs_.second == type_lexem::variable || lhs_.second == type_lexem::adress_variable) {
+                    lhs_.first = function->TID->get_value(lhs_.first);
+                }
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
+                int result_ = lhs + rhs;
+                std::string result = std::to_string(result_);
+                operands.push(std::make_pair(result, type_lexem::literal));
+            } else if (u.first == "-") {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (lhs_.second == type_lexem::variable || lhs_.second == type_lexem::adress_variable) {
+                    lhs_.first = function->TID->get_value(lhs_.first);
+                }
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
+                int result_ = lhs - rhs;
+                std::string result = std::to_string(result_);
+                operands.push(std::make_pair(result, type_lexem::literal));
+            } else if (u.first == "=") {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                function->TID->set_value(lhs_.first, rhs_.first);
+            } else if (u.first == "+=") {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                std::string val = function->TID->get_value(lhs_.first);
+                int lhs  = std::stoi(val), rhs = std::stoi(rhs_.first);
+                int result_ = lhs + rhs;
+                std::string result = std::to_string(result_);
+                function->TID->set_value(lhs_.first, result);
+            } else if (u.first == "-=") {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                std::string val = function->TID->get_value(lhs_.first);
+                int lhs  = std::stoi(val), rhs = std::stoi(rhs_.first);
+                int result_ = lhs - rhs;
+                std::string result = std::to_string(result_);
+                function->TID->set_value(lhs_.first, result);
+            }
+        }
+        /*
+        *priority[","]  = 1;
+            priority["="]  = 2;
+            priority["+="]  = 2;
+            priority["-="]  = 2;
+            priority["||"]  = 3;
+            priority["&&"]  = 4;
+            priority["|"]  = 5;
+            priority["&"]  = 6;
+            priority["<"]  = 7;
+            priority[">"]  = 7;
+            priority["<="]  = 7;
+            priority[">"]  = 7;
+            priority["=="]  = 7;
+            priority["!="]  = 7;
+            priority["+"]  = 8;
+            priority["-"]  = 8;
+            priority["*"]  = 9;
+            priority["/"]  = 9;
+            priority["%"]  = 9;
+            priority["++"]  = 10;
+            priority["--"]  = 10;
+         */
+        if (operands.top().second == type_lexem::variable || operands.top().second == type_lexem::adress_variable) {
+            operands.top().first = function->TID->get_value(operands.top().first);
+        }
+        return operands.top().first;
+    }
 
     void check_bin() {
         std::string lhs = stack.types.top();
@@ -516,18 +650,22 @@ private:
                 if (fl) stack.pushT("float");
                 else stack.pushT("int");
             }
-            gen_stack.push_literal(lexems[iter].word);
+            gen_stack.push_literal(lexems[iter].word, type_lexem::literal);
             ++iter;
         } else if (lexems[iter].type == 2) {
             if (lexems[iter + 1].word == "(") {
-                gen_stack.push_literal(lexems[iter].word);
                 std::string s = lexems[iter].word;
                 function_call();
-                gen_stack.push_literal(s);
+                gen_stack.push_literal(s, type_lexem::func_call);
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
-                gen_stack.push_literal(lexems[iter].word);
+                if (lexems[iter + 1].word == "=") {
+                    gen_stack.push_literal(lexems[iter].word, type_lexem::adress_variable);
+                } else {
+                    gen_stack.push_literal(lexems[iter].word, type_lexem::variable);
+                }
+
                 stack.pushT(type);
                 ++iter;
             }
@@ -555,6 +693,7 @@ private:
     }
 
     void function_call() {
+        std::string Name = lexems[iter].word;
         id();
         check_expression(lexems[iter - 1].word, lexems[iter - 1].num_len);
         if (lexems[iter].word == "(") {
@@ -575,8 +714,21 @@ private:
             gen_stack.push_other(lexems[iter].word);
             ++iter;
         } else error();
-
         stack.pushT(check_func(functionCall));
+        /*
+        func * curFunc;
+        for (auto u: functions) {
+            if (Name == u->name && functionCall->parameters.size() == u->parameters.size()) {
+                curFunc  = u;
+            }
+        }
+        std::vector <std::string> params;
+        for (auto u: functionCall->parameters) {
+            std::cout << u->id << std::endl;
+            params.push_back(u->id);
+        }
+        std::string res = get_function_call(curFunc, params);
+        std::cout << "RES " << res;*/
     }
 
     void literal() {
@@ -600,6 +752,8 @@ private:
         parameter param(type_, name);
         // Tree.push_id(param);
         if (lexems[iter].word == "=") {
+            gen_stack.push_literal(name, type_lexem::variable);
+            gen_stack.push_operation(lexems[iter].word);
             ++iter;
             expression1();
         } else if (lexems[iter].word == "[") {
@@ -838,7 +992,7 @@ private:
             } else {
                 expression();
                 checkPoint();
-                gen_stack.print();
+                //gen_stack.print();
             }
         }
         command_block();
@@ -849,6 +1003,7 @@ private:
     }
 
     void push_function(func *function, int line) {
+
         for (func *f: functions) {
             if (*function == *f) {
                 std::string s = "in line " + std::to_string(line);
@@ -913,7 +1068,6 @@ private:
         }
 
         if (lexems[iter++].word != ")") error();
-        push_function(cur_func, line);
         //create_scope
         //push_id
 
@@ -922,6 +1076,13 @@ private:
         //std::cout << lexems[iter].word << std::endl;
         check_return(cur_func);
         if (lexems[iter++].word != "}") error();
+        gen_stack.clear_stack();
+        cur_func->poliz = gen_stack.poliz;
+        gen_stack.clear();
+        cur_func->TID = Tree.current_scope_;
+        push_function(cur_func, line);
+        //std::cout << "HERE";
+        //cur_func->TID->get_cur();
         Tree.exit_scope();
     }
 
@@ -1108,19 +1269,22 @@ private:
                 if (fl) stack.pushT("float");
                 else stack.pushT("int");
             }
-            gen_stack.push_literal(lexems[iter].word);
+            gen_stack.push_literal(lexems[iter].word, type_lexem::literal);
             ++iter;
         } else if (lexems[iter].type == 2) {
             if (lexems[iter + 1].word == "(") {
-                gen_stack.push_literal(lexems[iter].word);
-                std::string s;
+                std::string s = lexems[iter].word;
                 function_call();
-                gen_stack.push_literal(s);
+                gen_stack.push_literal(s, type_lexem::func_call);
             } else {
                 std::string type = Tree.check_id(lexems[iter].word);
                 if (type == "") throw std::runtime_error("Such variable does not exist: " + lexems[iter].word);
                 stack.pushT(type);
-                gen_stack.push_literal(lexems[iter].word);
+                if (lexems[iter + 1].word == "=") {
+                    gen_stack.push_literal(lexems[iter].word, type_lexem::adress_variable);
+                } else {
+                    gen_stack.push_literal(lexems[iter].word, type_lexem::variable);
+                }
                 ++iter;
             }
         } else error();
@@ -1137,4 +1301,5 @@ void solve() {
     } catch (const std::invalid_argument &e) {
         std::cerr << "Parsing error: " << e.what() << '\n';
     }
+    parser.generation();
 }
