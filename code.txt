@@ -1,4 +1,5 @@
 int f(int a) {
+++a;
 return a + 1;
 }
 int main() {

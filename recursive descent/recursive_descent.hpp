@@ -85,7 +85,7 @@ private:
             priority["<"]  = 7;
             priority[">"]  = 7;
             priority["<="]  = 7;
-            priority[">"]  = 7;
+            priority[">="]  = 7;
             priority["=="]  = 7;
             priority["!="]  = 7;
             priority["+"]  = 8;
@@ -236,30 +236,7 @@ private:
                 std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
             }else if (u.second != type_lexem::operation) {
                 operands.push(u);
-            } else if (u.first == "+") {
-                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
-                if (lhs_.second == type_lexem::variable || lhs_.second == type_lexem::adress_variable) {
-                    lhs_.first = function->TID->get_value(lhs_.first);
-                }
-                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
-                    rhs_.first = function->TID->get_value(rhs_.first);
-                }
-                int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
-                int result_ = lhs + rhs;
-                std::string result = std::to_string(result_);
-                operands.push(std::make_pair(result, type_lexem::literal));
-            } else if (u.first == "-") {
-                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
-                if (lhs_.second == type_lexem::variable || lhs_.second == type_lexem::adress_variable) {
-                    lhs_.first = function->TID->get_value(lhs_.first);
-                }
-                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
-                    rhs_.first = function->TID->get_value(rhs_.first);
-                }
-                int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
-                int result_ = lhs - rhs;
-                std::string result = std::to_string(result_);
-                operands.push(std::make_pair(result, type_lexem::literal));
+            } else if (u.first == ",") {
             } else if (u.first == "=") {
                 std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
                 if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
@@ -286,31 +263,66 @@ private:
                 int result_ = lhs - rhs;
                 std::string result = std::to_string(result_);
                 function->TID->set_value(lhs_.first, result);
+            } else if (u.first == "++") {
+                std::pair <std::string, type_lexem> hs_ = get_hs(operands);
+                std::string val = function->TID->get_value(hs_.first);
+                int lhs  = std::stoi(val);
+                int result_ = lhs + 1;
+                std::string result = std::to_string(result_);
+                function->TID->set_value(hs_.first, result);
+            } else if (u.first == "--") {
+                std::pair <std::string, type_lexem> hs_ = get_hs(operands);
+                std::string val = function->TID->get_value(hs_.first);
+                int lhs  = std::stoi(val);
+                int result_ = lhs - 1;
+                std::string result = std::to_string(result_);
+                function->TID->set_value(hs_.first, result);
+            } else {
+                std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
+                if (lhs_.second == type_lexem::variable || lhs_.second == type_lexem::adress_variable) {
+                    lhs_.first = function->TID->get_value(lhs_.first);
+                }
+                if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
+                    rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
+                int result_;
+                if (u.first == "+") {
+                    result_ = lhs + rhs;
+                } else if (u.first == "-") {
+                    result_ = lhs - rhs;
+                } else if (u.first == "*") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "/") {
+                    result_ = lhs / rhs;
+                } else if (u.first == "%") {
+                    result_ = lhs % rhs;
+                } else if (u.first == "||") {
+                    result_ = lhs || rhs;
+                } else if (u.first == "&&") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "|") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "&") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "<") {
+                    result_ = lhs < rhs;
+                } else if (u.first == "<=") {
+                    result_ = lhs <= rhs;
+                } else if (u.first == ">") {
+                    result_ = lhs > rhs;
+                } else if (u.first == ">=") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "==") {
+                    result_ = lhs * rhs;
+                } else if (u.first == "!=") {
+                    result_ = lhs * rhs;
+                }
+
+                std::string result = std::to_string(result_);
+                operands.push(std::make_pair(result, type_lexem::literal));
             }
         }
-        /*
-        *priority[","]  = 1;
-            priority["="]  = 2;
-            priority["+="]  = 2;
-            priority["-="]  = 2;
-            priority["||"]  = 3;
-            priority["&&"]  = 4;
-            priority["|"]  = 5;
-            priority["&"]  = 6;
-            priority["<"]  = 7;
-            priority[">"]  = 7;
-            priority["<="]  = 7;
-            priority[">"]  = 7;
-            priority["=="]  = 7;
-            priority["!="]  = 7;
-            priority["+"]  = 8;
-            priority["-"]  = 8;
-            priority["*"]  = 9;
-            priority["/"]  = 9;
-            priority["%"]  = 9;
-            priority["++"]  = 10;
-            priority["--"]  = 10;
-         */
         if (operands.top().second == type_lexem::variable || operands.top().second == type_lexem::adress_variable) {
             operands.top().first = function->TID->get_value(operands.top().first);
         }
