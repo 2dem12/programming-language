@@ -25,7 +25,7 @@ int main() {
         string a;
         //a = a + "777";
     }
-    #while (a == b) {
+    while (j, a == b) {
         if ((a - b) == 10) {
             for (;;) {}
         } elif (a - b <= 10) {
@@ -35,7 +35,7 @@ int main() {
         } else {
             print (39);
         }
-    }#
+    }
     #while(i == 0) {
              a = 1;
              string a;
@@ -43,3 +43,5 @@ int main() {
          }#
    return 0;
 }
+
+с
