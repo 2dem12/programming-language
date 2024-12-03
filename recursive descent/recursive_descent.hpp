@@ -312,11 +312,11 @@ private:
                 } else if (u.first == ">") {
                     result_ = lhs > rhs;
                 } else if (u.first == ">=") {
-                    result_ = lhs * rhs;
+                    result_ = lhs >= rhs;
                 } else if (u.first == "==") {
-                    result_ = lhs * rhs;
+                    result_ = lhs == rhs;
                 } else if (u.first == "!=") {
-                    result_ = lhs * rhs;
+                    result_ = lhs != rhs;
                 }
 
                 std::string result = std::to_string(result_);

@@ -1,6 +1,7 @@
 int f(int a) {
 ++a;
-return a + 1;
+int b = 3;
+return (a == b);
 }
 int main() {
    f(2);
