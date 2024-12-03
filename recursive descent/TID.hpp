@@ -35,6 +35,7 @@ struct parameter {
     parameter(std::string type_): type(type_), id(" ") {}
     std::string type;
     std::string id;
+    std::string value;
     bool operator == (const parameter & other) {
         if (type == other.type) return true;
         return false;
@@ -64,9 +65,7 @@ public:
     }
 
     std::string check_id(std::string x) {
-        //std::cout << x << " HERE"<< std::endl;
         for (parameter& i : vec) {
-            std::cout << i.id << std::endl;
             if (i.id == x) {
                 return i.type;
             }
@@ -74,7 +73,31 @@ public:
         // throw std::invalid_argument("such variable does not exist");
         return "";
     }
-
+    std::string get_val(std::string x) {
+        for (parameter& i : vec) {
+            if (i.id == x) {
+                return i.value;
+            }
+        }
+        return "";
+    }
+    bool set_val(std::string x, const std::string& val) {
+       // std::cout << "here" << std::endl;
+        for (parameter& i : vec) {
+           // std::cout << i.id << " " << x << std::endl;
+            if (i.id == x) {
+                i.value = val;
+                return 1;
+            }
+        }
+        return 0;
+    }
+    void get_cur () {
+        for (auto u: vec) {
+            std::cout << u.id << " ";
+        }
+        std::cout << std::endl;
+    }
 private:
     std::vector<parameter> vec;
 };
@@ -127,10 +150,32 @@ public:
         }
         return "";
     }
-
+    std::string get_value(const std::string& x) {
+        tree_tid* scope = current_scope_;
+        while (scope) {
+            std::string result = scope->me_.get_val(const_cast<std::string&>(x));
+            if (!result.empty()) {
+                return result;
+            }
+            scope = scope->father_;
+        }
+        return "";
+    }
+    void set_value(const std::string& x, const std::string& val) {
+        tree_tid* scope = current_scope_;
+        while (scope) {
+            if (scope->me_.set_val(x, val)) {
+                break;
+            }
+            scope = scope->father_;
+        }
+    }
+    void get_cur() {
+        current_scope_->me_.get_cur();
+    }
+    tree_tid* current_scope_ = this;
 private:
     tid me_;
     tree_tid* father_ = nullptr;
     std::vector<std::unique_ptr<tree_tid>> child_;
-    tree_tid* current_scope_ = this;
 };
