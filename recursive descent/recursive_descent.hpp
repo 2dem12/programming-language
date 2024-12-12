@@ -31,7 +31,8 @@ private:
         variable,
         operation,
         func_call,
-        literal
+        literal,
+        perehod
     };
     struct func {
         func(std::string type_, std::string name_) : type_answer(std::move(type_)), name(std::move(name_)) {
@@ -164,6 +165,21 @@ private:
                 poliz.pop_back();
             }
         }
+        int len_poliz() {
+            return poliz.size();
+        }
+
+        void replase_adres(int index, int adres) {
+            poliz[index].first = std::to_string(adres);
+        }
+
+        void push_adres(int adres) {
+            poliz.push_back({std::to_string(adres), type_lexem::adress_variable});
+        }
+
+        void push_perehod(std::string perehod) {
+            poliz.push_back({perehod, type_lexem::perehod});
+        }
     };
     general_stack gen_stack;
     struct stck {
@@ -211,7 +227,7 @@ private:
         }
         std::stack <std::pair<std::string, type_lexem>> operands;
         for (auto u: function->poliz) {
-            std::cout << u.first;
+            std::cout << u.first << " ";
         }
         std::cout << std::endl;
         for (auto u: function->poliz) {
@@ -232,6 +248,7 @@ private:
                     }
                     params.push_back(hs_.first);
                 }
+                std::reverse(params.begin(), params.end());
                 std::string res = get_function_call(curFunc, params);
                 std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
             }else if (u.second != type_lexem::operation) {
@@ -858,6 +875,7 @@ private:
         check_bool();
 
         if (lexems[iter++].word != ")") error();
+
         if (lexems[iter++].word != "{") error();
         Tree.create_scope();
         stack.clear();
@@ -881,6 +899,13 @@ private:
         } else {
             iter++;
         }
+        // gen_stack.push_adres(0);
+        // int adres_proverka = gen_stack.len_poliz() - 1;
+        // gen_stack.push_perehod("!F");
+
+        // gen_stack.push_adres(0);
+        // int adres_begin_cycle = gen_stack.len_poliz() - 1;
+        // gen_stack.push_perehod("!");
         if (lexems[iter].word != ";") {
             expression();
             check_bool();
@@ -888,6 +913,7 @@ private:
         } else {
             iter++;
         }
+        // int begin_operation = gen_stack.len_poliz();
         if (lexems[iter].word != ")") {
             expression();
             stack.clear();
@@ -895,14 +921,21 @@ private:
         } else {
             iter++;
         }
+        // gen_stack.push_adres(adres_proverka);
+        // gen_stack.push_perehod("!");
 
         if (lexems[iter++].word != "{") error();
+
+        // gen_stack.replase_adres(adres_begin_cycle, gen_stack.len_poliz());
         Tree.create_scope();
         stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
+        // gen_stack.push_adres(begin_operation);
+        // gen_stack.push_perehod("!");
+        // gen_stack.replase_adres(adres_proverka, gen_stack.len_poliz());
     }
 
     void func_while() {
