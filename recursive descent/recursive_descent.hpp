@@ -895,47 +895,51 @@ private:
         if (lexems[iter].word != ";") {
             expression();
             stack.clear();
+            gen_stack.clear_stack();
             if (lexems[iter++].word != ";") error();
         } else {
             iter++;
         }
-        // gen_stack.push_adres(0);
-        // int adres_proverka = gen_stack.len_poliz() - 1;
-        // gen_stack.push_perehod("!F");
+        gen_stack.push_adres(0);
+        int adres_proverka = gen_stack.len_poliz() - 1;
+        gen_stack.push_perehod("!F");
 
-        // gen_stack.push_adres(0);
-        // int adres_begin_cycle = gen_stack.len_poliz() - 1;
-        // gen_stack.push_perehod("!");
+        gen_stack.push_adres(0);
+
+        int adres_begin_cycle = gen_stack.len_poliz() - 1;
+        gen_stack.push_perehod("!");
         if (lexems[iter].word != ";") {
             expression();
             check_bool();
+            gen_stack.clear_stack();
             if (lexems[iter++].word != ";") error();
         } else {
             iter++;
         }
-        // int begin_operation = gen_stack.len_poliz();
+        int begin_operation = gen_stack.len_poliz();
         if (lexems[iter].word != ")") {
             expression();
             stack.clear();
+            gen_stack.clear_stack();
             if (lexems[iter++].word != ")") error();
         } else {
             iter++;
         }
-        // gen_stack.push_adres(adres_proverka);
-        // gen_stack.push_perehod("!");
+        gen_stack.push_adres(adres_proverka);
+        gen_stack.push_perehod("!");
 
         if (lexems[iter++].word != "{") error();
 
-        // gen_stack.replase_adres(adres_begin_cycle, gen_stack.len_poliz());
+        gen_stack.replase_adres(adres_begin_cycle, gen_stack.len_poliz());
         Tree.create_scope();
         stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
-        // gen_stack.push_adres(begin_operation);
-        // gen_stack.push_perehod("!");
-        // gen_stack.replase_adres(adres_proverka, gen_stack.len_poliz());
+        gen_stack.push_adres(begin_operation);
+        gen_stack.push_perehod("!");
+        gen_stack.replase_adres(adres_proverka, gen_stack.len_poliz());
     }
 
     void func_while() {
@@ -995,7 +999,6 @@ private:
         //std::cout << lexems[iter].word << std::endl;
         if (lexems[iter].word == ";") {
             gen_stack.clear_stack();
-
             ++iter;
         } else error();
 
