@@ -2,8 +2,8 @@ int main() {
     int a = 1;
     int b = 12;
     int i;
-    for (i = 10; i < a; ++i) {
-        --b;
+    while (i < b) {
+        ++i;
     }
     return 1;
 }

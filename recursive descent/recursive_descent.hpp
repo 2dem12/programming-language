@@ -950,12 +950,12 @@ private:
         // Damir
         iter++;
         if (lexems[iter++].word != "(") error();
-        int adres_proverka = gen_stack.len_poliz();
+        int perehod_proverka = gen_stack.len_poliz();
         expression();
         check_bool();
         gen_stack.clear_stack();
-        int adres_haha = gen_stack.len_poliz() + 1;
         gen_stack.push_adres(0);
+        int perehod_po_lzy = gen_stack.len_poliz() - 1;
         gen_stack.push_perehod("!F");
         if (lexems[iter++].word != ")") error();
 
@@ -963,12 +963,11 @@ private:
         Tree.create_scope();
         stack.clear();
         body();
-        gen_stack.push_adres(adres_proverka);
+        gen_stack.push_adres(perehod_proverka);
         gen_stack.push_perehod("!");
         if (lexems[iter++].word != "}") error();
         gen_stack.clear_stack();
-        int finish_cycle = gen_stack.len_poliz();
-        gen_stack.replase_adres(adres_haha, finish_cycle);
+        gen_stack.replase_adres(perehod_po_lzy, gen_stack.len_poliz());
         Tree.exit_scope();
     }
 
