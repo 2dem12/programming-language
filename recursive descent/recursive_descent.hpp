@@ -848,12 +848,19 @@ private:
         if (lexems[iter++].word != "}") error();
     }
 
-    void func_elif() {
+    void func_elif(std::vector<int>& adress) {
         iter++; // "elif" dont ++, becos we ++ now
         if (lexems[iter++].word != "(") error();
 
         expression();
         check_bool();
+
+        gen_stack.clear_stack();
+
+        int perehod_po_lzy = gen_stack.len_poliz();
+        gen_stack.push_adres(0);
+        gen_stack.push_perehod("!F");
+
 
         if (lexems[iter++].word != ")") error();
         if (lexems[iter++].word != "{") error();
@@ -864,7 +871,14 @@ private:
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
 
-        if (lexems[iter].word == "elif") func_elif();
+
+        adress.push_back(gen_stack.len_poliz());
+        gen_stack.push_adres(0);
+        gen_stack.push_perehod("!");
+
+        gen_stack.replase_adres(perehod_po_lzy, gen_stack.len_poliz());
+
+        if (lexems[iter].word == "elif") func_elif(adress);
     }
 
     void func_if() {
@@ -873,6 +887,11 @@ private:
 
         expression();
         check_bool();
+        gen_stack.clear_stack();
+
+        int perehod_po_lzy = gen_stack.len_poliz();
+        gen_stack.push_adres(0);
+        gen_stack.push_perehod("!F");
 
         if (lexems[iter++].word != ")") error();
 
@@ -884,8 +903,20 @@ private:
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
 
-        if (lexems[iter].word == "elif") func_elif();
+        int exit = gen_stack.len_poliz();
+        gen_stack.push_adres(0);
+        gen_stack.push_perehod("!");
+
+        gen_stack.replase_adres(perehod_po_lzy, gen_stack.len_poliz());
+        std::vector<int> adress;
+
+        if (lexems[iter].word == "elif") func_elif(adress);
         if (lexems[iter].word == "else") func_else();
+
+        for (int i : adress) {
+            gen_stack.replase_adres(i, gen_stack.len_poliz());
+        }
+        gen_stack.replase_adres(exit, gen_stack.len_poliz());
     }
 
     void func_for() {

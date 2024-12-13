@@ -2,8 +2,14 @@ int main() {
     int a = 1;
     int b = 12;
     int i;
-    while (i < b) {
+    if (i < a) {
         ++i;
+    } elif (i > a) {
+        --i;
+    } elif (i < b) {
+        --b;
+    } else {
+        ++a;
     }
     return 1;
 }
