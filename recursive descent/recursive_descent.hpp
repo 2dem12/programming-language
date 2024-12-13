@@ -900,14 +900,9 @@ private:
         } else {
             iter++;
         }
-        gen_stack.push_adres(0);
-        int adres_proverka = gen_stack.len_poliz() - 1;
-        gen_stack.push_perehod("!F");
 
-        gen_stack.push_adres(0);
+        int begin_prowerka = gen_stack.len_poliz();
 
-        int adres_begin_cycle = gen_stack.len_poliz() - 1;
-        gen_stack.push_perehod("!");
         if (lexems[iter].word != ";") {
             expression();
             check_bool();
@@ -916,7 +911,15 @@ private:
         } else {
             iter++;
         }
-        int begin_operation = gen_stack.len_poliz();
+
+        gen_stack.push_adres(0);
+        int perehod_po_lzy = gen_stack.len_poliz() - 1;
+        gen_stack.push_perehod("!F");
+        gen_stack.push_adres(0);
+        int perehod_posle_prov = gen_stack.len_poliz() - 1;
+        gen_stack.push_perehod("!");
+        int perehod_plas_plas = gen_stack.len_poliz();
+
         if (lexems[iter].word != ")") {
             expression();
             stack.clear();
@@ -925,37 +928,47 @@ private:
         } else {
             iter++;
         }
-        gen_stack.push_adres(adres_proverka);
+        gen_stack.push_adres(begin_prowerka);
         gen_stack.push_perehod("!");
 
         if (lexems[iter++].word != "{") error();
 
-        gen_stack.replase_adres(adres_begin_cycle, gen_stack.len_poliz());
+        gen_stack.replase_adres(perehod_posle_prov, gen_stack.len_poliz());
+
         Tree.create_scope();
         stack.clear();
         body();
 
         if (lexems[iter++].word != "}") error();
         Tree.exit_scope();
-        gen_stack.push_adres(begin_operation);
+        gen_stack.push_adres(perehod_plas_plas);
         gen_stack.push_perehod("!");
-        gen_stack.replase_adres(adres_proverka, gen_stack.len_poliz());
+        gen_stack.replase_adres(perehod_po_lzy, gen_stack.len_poliz());
     }
 
     void func_while() {
         // Damir
         iter++;
         if (lexems[iter++].word != "(") error();
+        int adres_proverka = gen_stack.len_poliz();
         expression();
         check_bool();
+        gen_stack.clear_stack();
+        int adres_haha = gen_stack.len_poliz() + 1;
+        gen_stack.push_adres(0);
+        gen_stack.push_perehod("!F");
         if (lexems[iter++].word != ")") error();
 
         if (lexems[iter++].word != "{") error();
         Tree.create_scope();
         stack.clear();
         body();
-
+        gen_stack.push_adres(adres_proverka);
+        gen_stack.push_perehod("!");
         if (lexems[iter++].word != "}") error();
+        gen_stack.clear_stack();
+        int finish_cycle = gen_stack.len_poliz();
+        gen_stack.replase_adres(adres_haha, finish_cycle);
         Tree.exit_scope();
     }
 
