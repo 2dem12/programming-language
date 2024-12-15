@@ -28,6 +28,7 @@ private:
     int iter = 0;
     enum class type_lexem {
         adress_variable,
+        adress,
         variable,
         operation,
         func_call,
@@ -174,7 +175,7 @@ private:
         }
 
         void push_adres(int adres) {
-            poliz.push_back({std::to_string(adres), type_lexem::adress_variable});
+            poliz.push_back({std::to_string(adres), type_lexem::adress});
         }
 
         void push_perehod(std::string perehod) {
@@ -230,7 +231,9 @@ private:
             std::cout << u.first << " ";
         }
         std::cout << std::endl;
-        for (auto u: function->poliz) {
+        // for (auto u: function->poliz) {
+        for (int i = 0; i < function->poliz.size(); i++) {
+            auto u = function->poliz[i];
             if (u.second == type_lexem::func_call) {
                 func * curFunc;
                 int size;
@@ -251,7 +254,18 @@ private:
                 std::reverse(params.begin(), params.end());
                 std::string res = get_function_call(curFunc, params);
                 std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
-            }else if (u.second != type_lexem::operation) {
+            } else if (u.second == type_lexem::adress) {
+                int adres = stoi(u.first);
+                i++;
+                std::string perehod = function->poliz[i].first;
+                if (perehod == "!") {
+                    i = adres - 1;
+                } else if (perehod == "!F") {
+                    if (operands.top().first == "0") {
+                        i = adres - 1;
+                    }
+                }
+            } else if (u.second != type_lexem::operation) {
                 operands.push(u);
             } else if (u.first == ",") {
             } else if (u.first == "=") {
@@ -314,6 +328,7 @@ private:
                     result_ = lhs / rhs;
                 } else if (u.first == "%") {
                     result_ = lhs % rhs;
+                    // result_ = rhs % lhs;
                 } else if (u.first == "||") {
                     result_ = lhs || rhs;
                 } else if (u.first == "&&") {
