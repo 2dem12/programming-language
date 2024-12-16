@@ -38,7 +38,24 @@ private:
     struct func {
         func(std::string type_, std::string name_) : type_answer(std::move(type_)), name(std::move(name_)) {
         }
-
+        func(func * other)
+                : name(other->name),
+                  type_answer(other->type_answer),
+                  poliz(other->poliz),
+                  TID(nullptr)
+        {
+            parameters.reserve(other->parameters.size());
+            for (const auto& param_ptr : other->parameters) {
+                if (param_ptr) {
+                    parameters.push_back(new parameter(*param_ptr));
+                } else {
+                    parameters.push_back(nullptr);
+                }
+            }
+            if (other->TID) {
+                TID = new tree_tid(*other->TID);
+            }
+        }
         bool operator==(const func &function) {
             if (name == function.name
                 && parameters.size() == function.parameters.size()) {
@@ -132,6 +149,10 @@ private:
                     poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                     gstack.pop();
                 }
+                gstack.push(s);
+            }
+            if (s == "r") {
+                clear_stack();
                 gstack.push(s);
             }
             if (s == ")") {
@@ -235,14 +256,15 @@ private:
         for (int i = 0; i < function->poliz.size(); i++) {
             auto u = function->poliz[i];
             if (u.second == type_lexem::func_call) {
-                func * curFunc;
+                func * actualFunc;
                 int size;
                 for (auto g: functions) {
                     if (u.first == g->name) {
-                        curFunc  = g;
+                        actualFunc  = g;
                         size = g->parameters.size();
                     }
                 }
+                func * curFunc = new func(actualFunc);
                 std::vector <std::string> params;
                 while (size--) {
                     std::pair <std::string, type_lexem> hs_ = get_hs(operands);
@@ -254,6 +276,7 @@ private:
                 std::reverse(params.begin(), params.end());
                 std::string res = get_function_call(curFunc, params);
                 std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
+                operands.push(std::make_pair(res, type_lexem::literal));
             } else if (u.second == type_lexem::adress) {
                 int adres = stoi(u.first);
                 i++;
@@ -267,6 +290,12 @@ private:
                 }
             } else if (u.second != type_lexem::operation) {
                 operands.push(u);
+            } else if (u.first == "r") {
+                std::pair <std::string, type_lexem> hs_ = get_hs(operands);
+                if (hs_.second == type_lexem::variable || hs_.second == type_lexem::adress_variable) {
+                    hs_.first = function->TID->get_value(hs_.first);
+                }
+                return hs_.first;
             } else if (u.first == ",") {
             } else if (u.first == "=") {
                 std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
@@ -909,7 +938,6 @@ private:
         gen_stack.push_perehod("!F");
 
         if (lexems[iter++].word != ")") error();
-
         if (lexems[iter++].word != "{") error();
         Tree.create_scope();
         stack.clear();
@@ -1070,6 +1098,8 @@ private:
             //defining_variables();
             many_variables();
             checkPoint();
+        } else if (lexems[iter].word == "return") {
+            check_return1();
         } else if (lexems[iter].word == "if") {
             func_if();
         } else if (lexems[iter].word == "for") {
@@ -1135,7 +1165,21 @@ private:
             checkPoint();
         } else error("return does not match function parameters");
     }
-
+    void check_return1 () {
+        if (lexems[iter].word == "return") {
+            ++iter;
+        } else throw std::runtime_error("function does not contain a return");
+        if (lexems[iter].word == ";") {
+            checkPoint();
+            return;
+        }
+        expression1();
+        //std::string res = stack.types.top();
+        //stack.types.pop();
+        std::string s = "r";
+        gen_stack.push_other(s);
+        checkPoint();
+    }
     void function() {
         std::string s_type = lexems[iter].word;
         if (lexems[iter].word == "int" || lexems[iter].word == "string" || lexems[iter].word == "char" || lexems[iter].
@@ -1176,17 +1220,17 @@ private:
         if (lexems[iter++].word != ")") error();
         //create_scope
         //push_id
-
+        push_function(cur_func, line);
         if (lexems[iter++].word != "{") error();
         body();
         //std::cout << lexems[iter].word << std::endl;
-        check_return(cur_func);
+        //check_return(cur_func);
         if (lexems[iter++].word != "}") error();
         gen_stack.clear_stack();
         cur_func->poliz = gen_stack.poliz;
         gen_stack.clear();
         cur_func->TID = Tree.current_scope_;
-        push_function(cur_func, line);
+        //push_function(cur_func, line);
         //std::cout << "HERE";
         //cur_func->TID->get_cur();
         Tree.exit_scope();

@@ -44,6 +44,11 @@ struct parameter {
 
 struct tid {
 public:
+
+    tid() {}
+    tid(tid * other) {
+        vec = other->vec;
+    }
     bool push_id(parameter& x) {
         for (parameter& i : vec) {
             if (i.id == x.id && i.type == x.type) {
@@ -105,6 +110,15 @@ private:
 
 struct tree_tid {
 public:
+    tree_tid() {}
+    tree_tid(const tree_tid& other) : me_(other.me_) {
+        for (const auto& child : other.child_) {
+            auto child_copy = std::make_unique<tree_tid>(*child);
+            child_copy->father_ = this;
+            child_.emplace_back(std::move(child_copy));
+        }
+        current_scope_ = this;
+    }
     void create_scope() {
         auto new_scope = std::make_unique<tree_tid>();
         new_scope->father_ = current_scope_;
@@ -178,4 +192,5 @@ private:
     tid me_;
     tree_tid* father_ = nullptr;
     std::vector<std::unique_ptr<tree_tid>> child_;
+
 };
