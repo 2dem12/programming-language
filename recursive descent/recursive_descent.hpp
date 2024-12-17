@@ -146,9 +146,16 @@ private:
             if (s == "(") gstack.push(s);
             if (s == ",") {
                 while (!gstack.empty()) {
+                    if (gstack.top() == "(") {
+                        return;
+                    }
                     poliz.push_back(std::make_pair(gstack.top(), type_lexem::operation));
                     gstack.pop();
                 }
+                gstack.push(s);
+            }
+            if (s == "p") {
+                clear_stack();
                 gstack.push(s);
             }
             if (s == "r") {
@@ -243,18 +250,23 @@ private:
         operands.pop();
         return ans;
     }
+    //int goes = 0;
     std::string get_function_call(func * function, std::vector <std::string>& parameters) {
+        //std::cout << "here " << std::endl;
+        //++goes;
+        //if (goes == 5) return "";
         for (int i = 0; i < function->parameters.size(); i++) {
             function->TID->set_value(function->parameters[i]->id, parameters[i]);
         }
         std::stack <std::pair<std::string, type_lexem>> operands;
-        for (auto u: function->poliz) {
+        /*for (auto u: function->poliz) {
             std::cout << u.first << " ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl;*/
         // for (auto u: function->poliz) {
         for (int i = 0; i < function->poliz.size(); i++) {
             auto u = function->poliz[i];
+            //std::cout << u.first << std::endl;
             if (u.second == type_lexem::func_call) {
                 func * actualFunc;
                 int size;
@@ -274,8 +286,12 @@ private:
                     params.push_back(hs_.first);
                 }
                 std::reverse(params.begin(), params.end());
+                //for (auto y: params) {
+                //    std::cout << y << " y ";
+                //}
+                //std::cout << std::endl;
                 std::string res = get_function_call(curFunc, params);
-                std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
+                //std::cout << "result of " << curFunc->name<< " function: " << res << std::endl;
                 operands.push(std::make_pair(res, type_lexem::literal));
             } else if (u.second == type_lexem::adress) {
                 int adres = stoi(u.first);
@@ -296,7 +312,14 @@ private:
                     hs_.first = function->TID->get_value(hs_.first);
                 }
                 return hs_.first;
+            } else if (u.first == "p") {
+                std::pair <std::string, type_lexem> hs_ = get_hs(operands);
+                if (hs_.second == type_lexem::variable || hs_.second == type_lexem::adress_variable) {
+                    hs_.first = function->TID->get_value(hs_.first);
+                }
+                std::cout << hs_.first << " print result" << std::endl;
             } else if (u.first == ",") {
+
             } else if (u.first == "=") {
                 std::pair <std::string, type_lexem> rhs_ = get_hs(operands), lhs_ = get_hs(operands);
                 if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
@@ -344,6 +367,29 @@ private:
                 }
                 if (rhs_.second == type_lexem::variable || rhs_.second == type_lexem::adress_variable) {
                     rhs_.first = function->TID->get_value(rhs_.first);
+                }
+                //std::cout << "RESULT1 " << lhs_.first << " " << rhs_.first << std::endl;
+                if (lhs_.first[0] == '"' || rhs_.first[0] == '"') {
+                    //std::cout << "HERE " << std::endl;
+                    std::string result;
+                    if (lhs_.first[0] == '"') {
+                        lhs_.first = lhs_.first.substr(1, lhs_.first.size() - 2);
+                    }
+                    if (rhs_.first[0] == '"') {
+                        rhs_.first = rhs_.first.substr(1, rhs_.first.size() - 2);
+                    }
+                    if (u.first == "+") {
+                        result += '"';
+                        result += rhs_.first + lhs_.first;
+                        result += '"';
+                        //std::cout << result << " result" << std::endl;
+                        operands.push(std::make_pair(result, type_lexem::literal));
+                    } else if (u.first == "!=") {
+                        bool res = (lhs_.first != rhs_.first);
+                        std::string result = std::to_string(res);
+                        operands.push(std::make_pair(result, type_lexem::literal));
+                    }
+                    continue;
                 }
                 int lhs  = std::stoi(lhs_.first), rhs = std::stoi(rhs_.first);
                 int result_;
@@ -443,7 +489,7 @@ private:
     void check_bool() {
         std::string type = stack.types.top();
         stack.types.pop();
-        if (type == "int" || type == "bool" || type == "float") {
+        if (type == "int" || type == "bool" || type == "float" || type == "string") {
         } else error(" not a boollean expression, type is: " + type);
     }
 
@@ -778,11 +824,13 @@ private:
         functionCall->parameters.push_back(new parameter(stack.types.top()));
         stack.types.pop();
         while (lexems[iter].word == ",") {
+            gen_stack.push_other(lexems[iter].word);
             ++iter;
             expression1();
             functionCall->parameters.push_back(new parameter(stack.types.top()));
             stack.types.pop();
         }
+        //gen_stack.clear_stack();
         if (lexems[iter].word == ")") {
             gen_stack.push_other(lexems[iter].word);
             ++iter;
@@ -871,11 +919,13 @@ private:
     void print() {
         if (lexems[iter].word == "(") {
             ++iter;
-            if (lexems[iter].type == 3 || lexems[iter].type == 2) {
-                ++iter;
-            } else {
-                expression();
-            }
+            //if (lexems[iter].type == 3 || lexems[iter].type == 2) {
+            //    ++iter;
+            //} else {
+            expression();
+            std::string s = "p";
+            gen_stack.push_other(s);
+            //}
             if (lexems[iter].word == ")") {
                 ++iter;
             } else error();

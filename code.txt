@@ -1,12 +1,15 @@
-int f(int a) {
-if (a >= 2) {
-return a;
-}
-return f(a + 1) + f(a + 2);
+void f(string a, int n, string last, int cnt) {
+    if (cnt == n) {
+        print(a);
+    } else {
+    if (last != "2") {
+        f(a + "1", n, "1", cnt+1);
+        f(a + "2", n, "2", cnt+1);
+    } else {
+        f(a + "1", n, "1", cnt+1);
+    }
+    }
 }
 int main() {
-    int a = 1;
-    f(a);
-    return 0;
+    f("", 5, "1", 0);
 }
-
