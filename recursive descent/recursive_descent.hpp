@@ -380,12 +380,16 @@ private:
                     }
                     if (u.first == "+") {
                         result += '"';
-                        result += rhs_.first + lhs_.first;
+                        result += lhs_.first + rhs_.first;
                         result += '"';
                         //std::cout << result << " result" << std::endl;
                         operands.push(std::make_pair(result, type_lexem::literal));
                     } else if (u.first == "!=") {
                         bool res = (lhs_.first != rhs_.first);
+                        std::string result = std::to_string(res);
+                        operands.push(std::make_pair(result, type_lexem::literal));
+                    } else if (u.first == "==") {
+                        bool res = (lhs_.first == rhs_.first);
                         std::string result = std::to_string(res);
                         operands.push(std::make_pair(result, type_lexem::literal));
                     }
